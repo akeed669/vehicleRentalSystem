@@ -1,0 +1,53 @@
+<%- include('partials/header') %>
+<div class="container mt-5">
+  <h1>Booking</h1>
+
+  <div class="row">
+    <div class="col-sm-8">
+      <div class="card">
+        <div class="card-body">
+
+          <!-- Makes POST request to /register route -->
+          <form action="/booking" method="POST">
+            <div class="form-group">
+              <input type="date" name="startDate">
+            </div>
+
+            <div class="form-group">
+              <input type="date" name="endDate">
+            </div>
+
+            <div class="form-group">
+              <label for="late"> Late return</label>
+              <input type="checkbox" name="late" id="tardy">
+            </div>
+            <!-- <div class="form-group">
+            <label for="username">Time Period</label>
+            <input type="email" class="form-control" name="email">
+          </div> -->
+          <div class="form-group">
+
+            <!-- <input type="password" class="form-control" name="password"> -->
+
+            <select name="extra1">
+              <% allExtras.forEach(function(extra){ %>
+
+                <option value="<%=extra._id %>"><%=extra.extraName %></option>
+
+                <% }) %>
+
+
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-dark">Book</button>
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<%- include('partials/header') %>
