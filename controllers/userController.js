@@ -180,7 +180,8 @@ exports.listVehicles = async (req, res, next) => {
 exports.makeBooking = async (req, res, next) => {
   try {
     //const mycar=req.body;
-    const test2=req.body.extra1;    
+    //const test2=req.body.extra1;
+    const test2=req.body.myextra;
     //const textra=req.body.horse;
     //const addit=e.options[e.selectedIndex].text;
     const isLate=req.body.late;

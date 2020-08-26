@@ -1,9 +1,10 @@
-const express = require('express');
+const express = require('express');  //
 const mongoose = require('mongoose');
 const ejs=require("ejs");
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const path = require('path')
+//const session = require('client-sessions');
 const Customer = require('./models/userModel')
 //const Admin = require('./models/userModel')
 const routes = require('./routes/route.js');
@@ -43,6 +44,13 @@ app.use(async (req, res, next) => {
     next();
   }
 });
+
+// app.use(session({
+//   cookieName: 'session',
+//   secret: 'random_string_goes_here',
+//   duration: 30 * 60 * 1000,
+//   activeDuration: 5 * 60 * 1000,
+// }));
 
 app.use('/', routes); app.listen(PORT, () => {
   console.log('Server is listening on Port:', PORT)
