@@ -1,12 +1,14 @@
+const Joi = require('joi');//
+const {Customer, validate} = require('../models/userModel');
 const { roles } = require('../roles')
 const mongoose=require("mongoose")
-const Customer= require('../models/userModel');
 const Vehicle= require('../models/vehicleModel');
 const Rental= require('../models/rentalModel');
 const Extra= require('../models/extrasModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 let vehicleForBooking=""
+
 require("dotenv").config();
 
 async function hashPassword(password) {
@@ -35,8 +37,13 @@ exports.makeadmin = async (req, res, next) =>{
 
 exports.signup = async (req, res, next) => {
   try {
+    const { error } = validateReg(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
 
-    const {cname, email, password, blacklisted, repeater,dob, role } = req.body
+    const user = await Customer.findOne({ email: req.body.email });
+    if (user) return res.status(400).send('User already registered.');
+
+    const {cname, email, password, blacklisted, repeater,dob,role } = req.body
     const hashedPassword = await hashPassword(password);
     const newUser = new Customer({ cname, email, password: hashedPassword, blacklisted, repeater, dob, role: role || "basic" });
     const accessToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
@@ -48,30 +55,58 @@ exports.signup = async (req, res, next) => {
     //   data: newUser,
     //   accessToken
     // })
-    res.render("login")
+    res.header('x-auth-token', accessToken).send(_.pick(user, ['_id', 'name', 'email']));
+    //res.render("login")
   } catch (error) {
     next(error)
+  }
+}
+
+exports.getLogin= async (req, res, next) => {
+  try {
+    res.render("login")
+  } catch (error) {
+    next(error);
+  }
+}
+
+exports.getSignup= async (req, res, next) => {
+  try {
+    res.render("register")
+  } catch (error) {
+    next(error);
   }
 }
 
 
 exports.login = async (req, res, next) => {
   try {
+    const { error } = validateLogin(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+
     const { email, password } = req.body;
     const user = await Customer.findOne({ email });
     if (!user) return next(new Error('Email does not exist'));
+
     const validPassword = await validatePassword(password, user.password);
     if (!validPassword) return next(new Error('Password is not correct'))
+
     const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d"
     });
+
+    //console.log(accessToken)
     await Customer.findByIdAndUpdate(user._id, { accessToken })
-    if(user.role==="basic"){
-      res.render("dashboard",{"currentUser":user})
-    }else if(user.role==="admin"){
-      res.send("admin")
-    }
-    // res.status(200).json({
+    res.header('x-auth-token', accessToken).render("dashboard",{"currentUser":user});
+    // if(user.role==="basic"){
+    //   res.header('x-auth-token', accessToken).render("dashboard",{"currentUser":user});
+    //
+    //   //res.render("dashboard",{"currentUser":user})
+    // }else if(user.role==="admin"){
+    //   res.send("admin")
+    // }
+
+    // res.status(200).send({
     //   data: { email: user.email, role: user.role },
     //   accessToken
     // })
@@ -82,7 +117,7 @@ exports.login = async (req, res, next) => {
 }
 
 exports.getUsers = async (req, res, next) => {
-  const users = await User.find({});
+  const users = await Customer.find({});
   res.status(200).json({
     data: users
   });
@@ -91,7 +126,7 @@ exports.getUsers = async (req, res, next) => {
 exports.getUser = async (req, res, next) => {
   try {
     const userId = req.params.userId;
-    const user = await User.findById(userId);
+    const user = await Customer.findById(userId);
     if (!user) return next(new Error('User does not exist'));
     res.status(200).json({
       data: user
@@ -142,7 +177,7 @@ exports.grantAccess = function(action, resource) {
       next(error)
     }
   }
-}
+}//
 
 exports.allowIfLoggedin = async (req, res, next) => {
   try {
@@ -209,14 +244,6 @@ exports.listBookings = async (req, res, next) => {
     .find()
     .populate('vehicle','fuelType')
     res.render("allbookings",{"allBookings":bookings})
-  } catch (error) {
-    next(error);
-  }
-}
-
-exports.loginPrompt=async (req, res, next) => {
-  try {
-    res.render("login")
   } catch (error) {
     next(error);
   }

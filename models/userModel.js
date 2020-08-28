@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const Joi = require('joi');
+const jwt = require('jsonwebtoken');
 
 const CustomerSchema = new Schema({
 
@@ -36,7 +38,7 @@ const CustomerSchema = new Schema({
   },
   dob:{
     type: Date,
-    required: true
+    required: false
   },
   role: {
     type: String,
@@ -48,14 +50,14 @@ const CustomerSchema = new Schema({
   }
 });
 
-CustomerSchema.methods.generateAuthToken = function() {
-  const token = jwt.sign({ _id: this._id, role: this.role }, process.env.JWT_SECRET);
-  return token;
-}
+// CustomerSchema.methods.generateAuthToken = function() {
+//   const token = jwt.sign({ _id: this._id, role: this.role }, process.env.JWT_SECRET);
+//   return token;
+// }
 
 const Customer = mongoose.model('customer', CustomerSchema);
 
-function validateUser(user) {
+function validateUserReg(user) {
   const schema = {
     cname: Joi.string().min(5).max(50).required(),
     email: Joi.string().min(5).max(255).required().email(),
@@ -63,6 +65,15 @@ function validateUser(user) {
   };
 
   return Joi.validate(user, schema);
+}
+
+function validateUserLogin(req) {
+  const schema = Joi.object({
+    email: Joi.string().min(5).max(255).required().email(),
+    password: Joi.string().min(5).max(255).required()
+  });
+
+  return schema.validate(req);
 }
 
 // const AdminSchema = new Schema({
@@ -92,6 +103,8 @@ function validateUser(user) {
 //const Admin = mongoose.model('admin', AdminSchema);
 
 
-module.exports = Customer;
-module.exports.validate=validateUser
+//module.exports = Customer;
+module.exports.validateReg=validateUserReg
+module.exports.validateLogin=validateUserLogin
+module.exports = mongoose.model('Customer', CustomerSchema);
 //module.exports = Admin;
