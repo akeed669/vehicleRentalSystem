@@ -19,7 +19,7 @@ router.get('/user/:userId', userController.allowIfLoggedin, userController.getUs
 
 //router.get('/users',userController.allowIfLoggedin, userController.grantAccess('readAny', 'profile'), userController.getUsers);
 
-router.get('/users', auth, userController.getUsers);
+router.get('/users',  auth, userController.getUsers);
 
 router.put('/user/:userId', userController.allowIfLoggedin, userController.grantAccess('updateAny', 'profile'), userController.updateUser);
 

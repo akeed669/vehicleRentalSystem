@@ -8,7 +8,6 @@ const path = require('path')
 const Customer = require('./models/userModel')
 //const Admin = require('./models/userModel')
 const routes = require('./routes/route.js');
-const ejs = require('ejs');
 
 // require("dotenv").config({
 //   path: path.join(__dirname, "../.env")

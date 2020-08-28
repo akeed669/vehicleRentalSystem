@@ -1,5 +1,6 @@
 const Joi = require('joi');//
-const {Customer, validate} = require('../models/userModel');
+//const {Customer, validateReg, validateLogin} = require('../models/userModel');
+const Customer = require('../models/userModel');
 const { roles } = require('../roles')
 const mongoose=require("mongoose")
 const Vehicle= require('../models/vehicleModel');
@@ -7,6 +8,8 @@ const Rental= require('../models/rentalModel');
 const Extra= require('../models/extrasModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const _ = require('lodash');
+
 let vehicleForBooking=""
 
 require("dotenv").config();
@@ -37,7 +40,7 @@ exports.makeadmin = async (req, res, next) =>{
 
 exports.signup = async (req, res, next) => {
   try {
-    const { error } = validateReg(req.body);
+    const { error } = validateUserReg(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     const user = await Customer.findOne({ email: req.body.email });
@@ -55,7 +58,7 @@ exports.signup = async (req, res, next) => {
     //   data: newUser,
     //   accessToken
     // })
-    res.header('x-auth-token', accessToken).send(_.pick(user, ['_id', 'name', 'email']));
+    res.header('x-auth-token', accessToken).send(_.pick(newUser, ['_id', 'cname', 'email', 'accessToken']));
     //res.render("login")
   } catch (error) {
     next(error)
@@ -81,7 +84,7 @@ exports.getSignup= async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
-    const { error } = validateLogin(req.body);
+    const { error } = validateUserLogin(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     const { email, password } = req.body;
@@ -265,4 +268,23 @@ exports.configureBooking = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+}
+
+function validateUserReg(req) {
+  const schema = Joi.object({
+    cname: Joi.string().min(5).max(50).required(),
+    email: Joi.string().min(5).max(255).required().email(),
+    password: Joi.string().min(5).max(255).required()
+  });
+
+  return schema.validate(req);
+}
+
+function validateUserLogin(req) {
+  const schema = Joi.object({
+    email: Joi.string().min(5).max(255).required().email(),
+    password: Joi.string().min(5).max(255).required()
+  });
+
+  return schema.validate(req);
 }

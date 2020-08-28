@@ -57,24 +57,24 @@ const CustomerSchema = new Schema({
 
 const Customer = mongoose.model('customer', CustomerSchema);
 
-function validateUserReg(user) {
-  const schema = {
-    cname: Joi.string().min(5).max(50).required(),
-    email: Joi.string().min(5).max(255).required().email(),
-    password: Joi.string().min(5).max(255).required()
-  };
-
-  return Joi.validate(user, schema);
-}
-
-function validateUserLogin(req) {
-  const schema = Joi.object({
-    email: Joi.string().min(5).max(255).required().email(),
-    password: Joi.string().min(5).max(255).required()
-  });
-
-  return schema.validate(req);
-}
+// function validateUserReg(req) {
+//   const schema = Joi.object({
+//     cname: Joi.string().min(5).max(50).required(),
+//     email: Joi.string().min(5).max(255).required().email(),
+//     password: Joi.string().min(5).max(255).required()
+//   });
+//
+//   return schema.validate(req);
+// }
+//
+// function validateUserLogin(req) {
+//   const schema = Joi.object({
+//     email: Joi.string().min(5).max(255).required().email(),
+//     password: Joi.string().min(5).max(255).required()
+//   });
+//
+//   return schema.validate(req);
+// }
 
 // const AdminSchema = new Schema({
 //
@@ -104,7 +104,7 @@ function validateUserLogin(req) {
 
 
 //module.exports = Customer;
-module.exports.validateReg=validateUserReg
-module.exports.validateLogin=validateUserLogin
+// exports.validateReg = validateUserReg
+// exports.validateLogin = validateUserLogin
 module.exports = mongoose.model('Customer', CustomerSchema);
 //module.exports = Admin;
