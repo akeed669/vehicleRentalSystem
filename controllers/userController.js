@@ -23,20 +23,20 @@ async function validatePassword(plainPassword, hashedPassword) {
 }
 
 //creating an admin
-exports.makeadmin = async (req, res, next) =>{
-  try{
-    const hashedPassword = await hashPassword(process.env.ADMIN_PASS);
-    const myAdmin = new Customer({ cname:"admin", email:"admin@z.com", password: hashedPassword, blacklisted:false, repeater:false, dob:"03/25/2015", role:"admin" });
-    const accessToken = jwt.sign({ userId: myAdmin._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d"
-    });
-    myAdmin.accessToken = accessToken;
-    await myAdmin.save();
-    res.send("succesfully created an admin")
-  } catch (error) {
-    next(error)
-  }
-}
+// exports.makeadmin = async (req, res, next) =>{
+//   try{
+//     const hashedPassword = await hashPassword(process.env.ADMIN_PASS);
+//     const myAdmin = new Customer({ cname:"admin", email:"admin@z.com", password: hashedPassword, blacklisted:false, repeater:false, dob:"03/25/2015", role:"admin" });
+//     const accessToken = jwt.sign({ userId: myAdmin._id }, process.env.JWT_SECRET, {
+//       expiresIn: "1d"
+//     });
+//     myAdmin.accessToken = accessToken;
+//     await myAdmin.save();
+//     res.send("succesfully created an admin")
+//   } catch (error) {
+//     next(error)
+//   }
+// }
 
 exports.signup = async (req, res, next) => {
   try {
@@ -141,10 +141,13 @@ exports.getUser = async (req, res, next) => {
 
 exports.updateUser = async (req, res, next) => {
   try {
+    // const { error } = validateUserReg(req.body);
+    // if (error) return res.status(400).send(error.details[0].message);
+
     const update = req.body
     const userId = req.params.userId;
-    await User.findByIdAndUpdate(userId, update);
-    const user = await User.findById(userId)
+    await Customer.findByIdAndUpdate(userId, update);
+    const user = await Customer.findById(userId)
     res.status(200).json({
       data: user,
       message: 'User has been updated'
@@ -157,7 +160,7 @@ exports.updateUser = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
   try {
     const userId = req.params.userId;
-    await User.findByIdAndDelete(userId);
+    await Customer.findByIdAndDelete(userId);
     res.status(200).json({
       data: null,
       message: 'User has been deleted'
@@ -274,7 +277,8 @@ function validateUserReg(req) {
   const schema = Joi.object({
     cname: Joi.string().min(5).max(50).required(),
     email: Joi.string().min(5).max(255).required().email(),
-    password: Joi.string().min(5).max(255).required()
+    password: Joi.string().min(5).max(255).required(),
+    role: Joi.string().min(5).max(5)
   });
 
   return schema.validate(req);
