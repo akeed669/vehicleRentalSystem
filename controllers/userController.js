@@ -45,7 +45,8 @@ exports.signup = async (req, res, next) => {
     const user = await Customer.findOne({ email: req.body.email });
     if (user) return res.status(400).send('User already registered.');
 
-    const {cname, email, password, blacklisted, repeater,dob,role } = req.body
+    const {cname, email, password, blacklisted, repeater,role } = req.body
+    const dob = new Date(req.body.dob)
     const hashedPassword = await hashPassword(password);
     const newUser = new Customer({ cname, email, password: hashedPassword, blacklisted, repeater, dob, role: role || "basic" });
     const accessToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
@@ -232,7 +233,8 @@ function validateUserReg(req) {
     cname: Joi.string().min(5).max(50).required(),
     email: Joi.string().min(5).max(255).required().email(),
     password: Joi.string().min(5).max(255).required(),
-    role: Joi.string().min(5).max(5)
+    role: Joi.string().min(5).max(5),
+    dob:Joi.date().less(new Date().toLocaleDateString())
   });
 
   return schema.validate(req);

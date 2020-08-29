@@ -38,7 +38,7 @@ const CustomerSchema = new Schema({
   },
   dob:{
     type: Date,
-    required: false
+    required: true
   },
   role: {
     type: String,

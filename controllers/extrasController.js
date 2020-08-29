@@ -91,8 +91,8 @@ exports.deleteExtra = async (req, res, next) => {
 function validateExtra(req) {
   const schema = Joi.object({
     extraName: Joi.string().min(3).max(50).required(),
-    dailyCost: Joi.number().required(),
-    unitsAvailable:Joi.number().required()
+    dailyCost: Joi.number().required().integer(),
+    unitsAvailable:Joi.number().required().integer()
   });
 
   return schema.validate(req);

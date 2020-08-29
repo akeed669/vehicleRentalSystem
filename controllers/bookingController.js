@@ -15,21 +15,28 @@ let vehicleForBooking=""
 
 exports.makeBooking = async (req, res, next) => {
   try {
-    // const { error } = validateBooking(req.body);
-    // if (error) return res.status(400).send(error.details[0].message);
+    const { error } = validateBooking(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
 
-    const {vehicle, bookingExtra, lateReturn} = req.body
+    const {customer, vehicle, bookingExtra, lateReturn} = req.body
+    const startDate = new Date(req.body.startDate)
+    const endDate = new Date(req.body.endDate)
 
-    const bvehicle = await Vehicle.findOne({ vehicleId: req.body.vehicle.vehicleId });
+    //checking whether the desired vehicle is available
+    const bvehicle = await Vehicle.findById({ _id: req.body.vehicle});
     if (bvehicle.carsAvailable == 0) return res.status(400).send('Not available');
 
-    const bextra = await Extra.findOne({ extraId: req.body.bookingExtra.extraId });
+    //checking whether the desired extra is available
+    const bextra = await Extra.findById({ _id: req.body.bookingExtra });
     if (bextra.unitsAvailable == 0) return res.status(400).send('Not available');
 
-    const newBooking = new Booking({ vehicle, bookingExtra, lateReturn });
+    const rentCost= calculateRent(startDate,endDate,bvehicle,bextra)
+
+    const newBooking = new Booking({ customer, vehicle, startDate, endDate, bookingExtra, lateReturn, rentCost });
 
     await newBooking.save();
 
+    //setting the reqwiest body to update vehicle and extras availability
     req.body={
       vehicle:bvehicle._id,
       extra:bextra._id,
@@ -50,42 +57,6 @@ exports.makeBooking = async (req, res, next) => {
   }
 }
 
-// exports.makeBooking = async (req, res, next) => {
-//   try {
-//     //const mycar=req.body;
-//     //const test2=req.body.extra1;
-//     const test2=req.body.myextra;
-//     //const textra=req.body.horse;
-//     //const addit=e.options[e.selectedIndex].text;
-//     const isLate=req.body.late;
-//     let lr=false;
-//     if(isLate){
-//       lr=true
-//     }
-//     const booking = new Rental({
-//       vehicle:vehicleForBooking,
-//       bookingExtra:test2,
-//       lateReturn:lr
-//       //customer:req.body.customer,
-//     });
-//     console.log(booking.vehicle)
-//     await booking.save()
-//     res.send("success")
-//   } catch (error) {
-//     next(error);
-//   }
-// }
-
-// exports.listBookings = async (req, res, next) => {
-//   try {
-//     const bookings = await Rental
-//     .find()
-//     .populate('vehicle','fuelType')
-//     res.render("allbookings",{"allBookings":bookings})
-//   } catch (error) {
-//     next(error);
-//   }
-// }
 //
 // exports.configureBooking = async (req, res, next) => {
 //   try {
@@ -98,12 +69,26 @@ exports.makeBooking = async (req, res, next) => {
 // }
 
 
-// function validateBooking(req) {
-//   const schema = Joi.object({
-//     vehicle: Joi.string().min(5).max(50).required(),
-//     bookingExtra: Joi.string().min(5).max(255).required().email(),
-//     lateReturn: Joi.string().min(5).max(255).required()
-//   });
-//
-//   return schema.validate(req);
-// }
+function validateBooking(req) {
+  const schema = Joi.object({
+    customer:Joi.string().required(),
+    vehicle:Joi.string().required(),
+    bookingExtra:Joi.string().required(),
+    startDate:Joi.date().greater('now'),
+    endDate:Joi.date().greater(Joi.ref('startDate')),
+    lateReturn: Joi.string().min(5).max(255).required(),
+    //rentCost:Joi.number().required()
+  });
+
+  return schema.validate(req);
+}
+
+function calculateRent(startDate,endDate,bvehicle,bextra){
+  //calculating the number of days for renting vehicle
+  const diffTime = Math.abs(endDate - startDate);
+  const rentDuration=Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  //calculating rent charges
+  const vehicleRent=bvehicle.dailyRent*rentDuration
+  const extrasRent=bextra.dailyCost*rentDuration
+  return vehicleRent+extrasRent
+}

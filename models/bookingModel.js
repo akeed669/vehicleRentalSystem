@@ -8,24 +8,29 @@ const Extra=require('../models/extrasModel');
 
 const BookingSchema=new mongoose.Schema({
 
-  // customer:{
-  //   type:mongoose.Schema.Types.ObjectId,
-  //   ref: 'Customer',
-  //   required: false
-  // },
+  customer:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref: 'customer',
+    required: true
+  },
+
   vehicle:[{type:mongoose.Schema.Types.ObjectId, ref: 'vehicle', required: true}],
-  // vehicle:{
-  //   type:vSchema,
-  //   required:true
-  // }
-  // daysRented:{
-  //   type: Number,
-  //   required: false
-  // },
-  // rentCost:{
-  //   type: Number,
-  //   required: true
-  // },
+
+  startDate:{
+    type: Date,
+    required: true
+  },
+
+  endDate:{
+    type: Date,
+    required: true
+  },
+
+  rentCost:{
+    type: Number,
+    required: true
+  },
+
   bookingExtra:[{type:mongoose.Schema.Types.ObjectId, ref: 'extra', required: true}],
 
   //bookingExtension:extensionSchema,

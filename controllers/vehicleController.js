@@ -90,8 +90,8 @@ function validateVehicle(req) {
     vname: Joi.string().min(3).max(50).required(),
     transmission: Joi.string().min(6).max(9).required(),
     fuelType: Joi.string().min(6).max(6).required(),
-    dailyRent: Joi.string().required(),
-    carsAvailable: Joi.number().required()
+    dailyRent: Joi.string().required().number(),
+    carsAvailable: Joi.number().required().integer()
   });
 
   return schema.validate(req);
