@@ -60,13 +60,13 @@ exports.updateVehicle = async (req, res, next) => {
     //   carsAvailable:vehicle.carsAvailable-1
     // }
     const update = req.body
-    
+
     await Vehicle.findByIdAndUpdate(vehicleId, update);
     const vehicle = await Vehicle.findById(vehicleId)
-    res.status(200).json({
-      data: vehicle,
-      message: 'Vehicle has been updated'
-    });
+    // res.status(200).json({
+    //   data: vehicle,
+    //   message: 'Vehicle has been updated'
+    // });
   } catch (error) {
     next(error)
   }

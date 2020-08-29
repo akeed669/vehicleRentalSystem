@@ -5,7 +5,8 @@ const mongoose=require("mongoose")
 const Vehicle= require('../models/vehicleModel');
 const Booking= require('../models/bookingModel');
 const vehicleController = require('../controllers/vehicleController');
-//const Extra= require('../models/extrasModel');
+const extrasController = require('../controllers/extrasController');
+const Extra= require('../models/extrasModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
@@ -22,20 +23,27 @@ exports.makeBooking = async (req, res, next) => {
     const bvehicle = await Vehicle.findOne({ vehicleId: req.body.vehicle.vehicleId });
     if (bvehicle.carsAvailable == 0) return res.status(400).send('Not available');
 
+    const bextra = await Extra.findOne({ extraId: req.body.bookingExtra.extraId });
+    if (bextra.unitsAvailable == 0) return res.status(400).send('Not available');
+
     const newBooking = new Booking({ vehicle, bookingExtra, lateReturn });
 
     await newBooking.save();
 
     req.body={
       vehicle:bvehicle._id,
-      carsAvailable:bvehicle.carsAvailable-1
+      extra:bextra._id,
+      carsAvailable:bvehicle.carsAvailable-1,
+      unitsAvailable:bextra.unitsAvailable-1
     }
     //console.log(req)
     await vehicleController.updateVehicle(req,res,next)
 
-    res.json({
-      data: newBooking
-    })
+    await extrasController.updateExtra(req,res,next)
+
+    // res.json({
+    //   data: newBooking
+    // })
 
   } catch (error) {
     next(error)

@@ -16,8 +16,8 @@ exports.addExtra = async (req, res, next) => {
     const { error } = validateExtra(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const {extraName, dailyCost} = req.body
-    const newExtra = new Extra({ extraName, dailyCost });
+    const {extraName, dailyCost, unitsAvailable} = req.body
+    const newExtra = new Extra({ extraName, dailyCost, unitsAvailable });
 
     await newExtra.save();
     res.json({
@@ -29,58 +29,70 @@ exports.addExtra = async (req, res, next) => {
   }
 }
 
-// exports.makeBooking = async (req, res, next) => {
-//   try {
-//     //const mycar=req.body;
-//     //const test2=req.body.extra1;
-//     const test2=req.body.myextra;
-//     //const textra=req.body.horse;
-//     //const addit=e.options[e.selectedIndex].text;
-//     const isLate=req.body.late;
-//     let lr=false;
-//     if(isLate){
-//       lr=true
-//     }
-//     const booking = new Rental({
-//       vehicle:vehicleForBooking,
-//       bookingExtra:test2,
-//       lateReturn:lr
-//       //customer:req.body.customer,
-//     });
-//     console.log(booking.vehicle)
-//     await booking.save()
-//     res.send("success")
-//   } catch (error) {
-//     next(error);
-//   }
-// }
+exports.updateExtra = async (req, res, next) => {
+  try {
+    // const { error } = validateUserReg(req.body);
+    // if (error) return res.status(400).send(error.details[0].message);
+    //const update = req.body
+    const extraId = req.params.extraId || req.body.extra;
+    //const vehicleId = vid;
+    //console.log(req.body.vehicle)
+    //const vehicle = await Vehicle.findById(vehicleId)
+    // const update={
+    //   carsAvailable:vehicle.carsAvailable-1
+    // }
+    const update = req.body
 
-// exports.listBookings = async (req, res, next) => {
-//   try {
-//     const bookings = await Rental
-//     .find()
-//     .populate('vehicle','fuelType')
-//     res.render("allbookings",{"allBookings":bookings})
-//   } catch (error) {
-//     next(error);
-//   }
-// }
-//
-// exports.configureBooking = async (req, res, next) => {
-//   try {
-//     vehicleForBooking=req.body.mycar
-//     const extraOptions = await Extra.find();
-//     res.render("booking",{allExtras:extraOptions})
-//   } catch (error) {
-//     next(error);
-//   }
-// }
+    await Extra.findByIdAndUpdate(extraId, update);
+    const extra = await Extra.findById(extraId)
+    res.status(200).json({
+      data: extra,
+      message: 'Extra has been updated'
+    });
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.getExtras = async (req, res, next) => {
+  const extras = await Extra.find({});
+  res.status(200).json({
+    data: extras
+  });
+}
+
+exports.getExtra = async (req, res, next) => {
+  try {
+    const extraId = req.params.extraId;
+    const extra = await Extra.findById(extraId);
+    if (!extra) return next(new Error('Extra does not exist'));
+    res.status(200).json({
+      data: extra
+    });
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.deleteExtra = async (req, res, next) => {
+  try {
+    const extraId = req.params.extraId;
+    await Extra.findByIdAndDelete(extraId);
+    res.status(200).json({
+      data: null,
+      message: 'Extra has been deleted'
+    });
+  } catch (error) {
+    next(error)
+  }
+}
 
 
 function validateExtra(req) {
   const schema = Joi.object({
     extraName: Joi.string().min(3).max(50).required(),
-    dailyCost: Joi.integer().required()
+    dailyCost: Joi.number().required(),
+    unitsAvailable:Joi.number().required()
   });
 
   return schema.validate(req);
