@@ -19,20 +19,26 @@ exports.makeBooking = async (req, res, next) => {
     if (error) return res.status(400).send(error.details[0].message);
 
     const {customer, vehicle, bookingExtra, lateReturn} = req.body
-    const startDate = new Date(req.body.startDate)
-    const endDate = new Date(req.body.endDate)
+    let insurance=true
 
     //checking whether the desired vehicle is available
     const bvehicle = await Vehicle.findById({ _id: req.body.vehicle});
-    if (bvehicle.carsAvailable == 0) return res.status(400).send('Not available');
+    if (bvehicle.carsAvailable == 0) return res.status(400).send('Desired car not available');
 
     //checking whether the desired extra is available
     const bextra = await Extra.findById({ _id: req.body.bookingExtra });
-    if (bextra.unitsAvailable == 0) return res.status(400).send('Not available');
+    if (bextra.unitsAvailable == 0) return res.status(400).send('Desired extra not available');
 
-    const rentCost= calculateRent(startDate,endDate,bvehicle,bextra)
+    const {startDate,endDate,rentCost} = await calculateRent(req,res,bvehicle,bextra,next)
 
-    const newBooking = new Booking({ customer, vehicle, startDate, endDate, bookingExtra, lateReturn, rentCost });
+    const bcustomer = await Customer.findById({ _id: req.body.customer});
+    const diffTime = Math.abs(new Date() - bcustomer.dob);
+    const currentAge=Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 365));
+    if (currentAge < 25 && (bvehicle.vname!="Small Town Car")) {
+      insurance=false;
+    };
+
+    const newBooking = new Booking({ customer, vehicle, startDate, endDate, bookingExtra, lateReturn, rentCost, insurance });
 
     await newBooking.save();
 
@@ -73,7 +79,7 @@ function validateBooking(req) {
   const schema = Joi.object({
     customer:Joi.string().required(),
     vehicle:Joi.string().required(),
-    bookingExtra:Joi.string().required(),
+    bookingExtra:Joi.string(),
     startDate:Joi.date().greater('now'),
     endDate:Joi.date().greater(Joi.ref('startDate')),
     lateReturn: Joi.string().min(5).max(255).required(),
@@ -83,12 +89,16 @@ function validateBooking(req) {
   return schema.validate(req);
 }
 
-function calculateRent(startDate,endDate,bvehicle,bextra){
+async function calculateRent(req,res,bvehicle,bextra,next){
+  //get the dates
+  const startDate = new Date(req.body.startDate)
+  const endDate = new Date(req.body.endDate)
   //calculating the number of days for renting vehicle
   const diffTime = Math.abs(endDate - startDate);
   const rentDuration=Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   //calculating rent charges
   const vehicleRent=bvehicle.dailyRent*rentDuration
   const extrasRent=bextra.dailyCost*rentDuration
-  return vehicleRent+extrasRent
+  const rentCost=vehicleRent+extrasRent
+  return {startDate,endDate,rentCost}
 }

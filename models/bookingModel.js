@@ -31,17 +31,18 @@ const BookingSchema=new mongoose.Schema({
     required: true
   },
 
-  bookingExtra:[{type:mongoose.Schema.Types.ObjectId, ref: 'extra', required: true}],
+  bookingExtra:[{type:mongoose.Schema.Types.ObjectId, ref: 'extra', required: false}],
 
   //bookingExtension:extensionSchema,
   lateReturn:{
     type: Boolean,
     default: false
   },
-  // insurance:{
-  //   type: Boolean,
-  //   default: false
-  // }
+
+  insurance:{
+    type: Boolean,    
+    required:true
+  }
 });
 
 const Booking = mongoose.model('booking', BookingSchema);
