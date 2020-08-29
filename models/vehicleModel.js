@@ -10,23 +10,25 @@ const VehicleSchema=new mongoose.Schema({
   },
   transmission:{
     type: String,
-    required: true
+    required: true,
+    enum: ["manual", "automatic"]
   },
   fuelType:{
     type: String,
-    required: true
+    required: true,
+    enum: ["petrol", "diesel", "hybrid"]
   },
   dailyRent:{
     type: Number,
     required: true
   },
-  carsOwned:{
+  carsAvailable:{
     type: Number,
     required: true
   },
   // available:{
   //   type: Boolean,
-  //   required: true
+  //   default: true,
   // },
 
 });

@@ -7,8 +7,10 @@ const path = require('path')
 //const session = require('client-sessions');
 const Customer = require('./models/userModel')
 //const Admin = require('./models/userModel')
-const routes = require('./routes/route.js');
-
+const customerRoutes = require('./routes/customerRoutes.js');
+const vehicleRoutes = require('./routes/vehicleRoutes.js');
+const bookingRoutes = require('./routes/bookingRoutes.js');
+const extrasRoutes = require('./routes/extrasRoutes.js');
 // require("dotenv").config({
 //   path: path.join(__dirname, "../.env")
 // });
@@ -52,7 +54,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //   activeDuration: 5 * 60 * 1000,
 // }));
 
-app.use('/', routes); app.listen(PORT, () => {
+app.use('/', customerRoutes, vehicleRoutes,bookingRoutes,extrasRoutes); app.listen(PORT, () => {
   console.log('Server is listening on Port:', PORT)
 })
 

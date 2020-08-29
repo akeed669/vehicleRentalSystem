@@ -3,14 +3,13 @@ const Joi = require('joi');//
 const Customer = require('../models/userModel');
 const { roles } = require('../roles')
 const mongoose=require("mongoose")
-const Vehicle= require('../models/vehicleModel');
-const Rental= require('../models/rentalModel');
-const Extra= require('../models/extrasModel');
+// const Vehicle= require('../models/vehicleModel');
+// const Rental= require('../models/rentalModel');
+// const Extra= require('../models/extrasModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 
-let vehicleForBooking=""
 
 require("dotenv").config();
 
@@ -209,51 +208,15 @@ exports.allowIfLoggedin = async (req, res, next) => {
 //   }
 // }
 
-exports.listVehicles = async (req, res, next) => {
-  try {
-    const vehicles = await Vehicle.find();
-    res.render("vehiclelisting",{"allVehicles":vehicles})
-  } catch (error) {
-    next(error);
-  }
-}
+// exports.listVehicles = async (req, res, next) => {
+//   try {
+//     const vehicles = await Vehicle.find();
+//     res.render("vehiclelisting",{"allVehicles":vehicles})
+//   } catch (error) {
+//     next(error);
+//   }
+// }
 
-exports.makeBooking = async (req, res, next) => {
-  try {
-    //const mycar=req.body;
-    //const test2=req.body.extra1;
-    const test2=req.body.myextra;
-    //const textra=req.body.horse;
-    //const addit=e.options[e.selectedIndex].text;
-    const isLate=req.body.late;
-    let lr=false;
-    if(isLate){
-      lr=true
-    }
-    const booking = new Rental({
-      vehicle:vehicleForBooking,
-      bookingExtra:test2,
-      lateReturn:lr
-      //customer:req.body.customer,
-    });
-    console.log(booking.vehicle)
-    await booking.save()
-    res.send("success")
-  } catch (error) {
-    next(error);
-  }
-}
-
-exports.listBookings = async (req, res, next) => {
-  try {
-    const bookings = await Rental
-    .find()
-    .populate('vehicle','fuelType')
-    res.render("allbookings",{"allBookings":bookings})
-  } catch (error) {
-    next(error);
-  }
-}
 
 exports.showHome=async (req, res, next) => {
   try {
@@ -263,15 +226,6 @@ exports.showHome=async (req, res, next) => {
   }
 }
 
-exports.configureBooking = async (req, res, next) => {
-  try {
-    vehicleForBooking=req.body.mycar
-    const extraOptions = await Extra.find();
-    res.render("booking",{allExtras:extraOptions})
-  } catch (error) {
-    next(error);
-  }
-}
 
 function validateUserReg(req) {
   const schema = Joi.object({

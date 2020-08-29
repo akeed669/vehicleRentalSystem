@@ -6,7 +6,7 @@ const Vehicle= require('../models/vehicleModel');
 const Extra=require('../models/extrasModel');
 //const {vSchema} = require('../models/vehicleModel');
 
-const RentSchema=new mongoose.Schema({
+const BookingSchema=new mongoose.Schema({
 
   // customer:{
   //   type:mongoose.Schema.Types.ObjectId,
@@ -39,6 +39,6 @@ const RentSchema=new mongoose.Schema({
   // }
 });
 
-const Rental = mongoose.model('rental', RentSchema);
+const Booking = mongoose.model('booking', BookingSchema);
 
-module.exports = Rental;
+module.exports = Booking;

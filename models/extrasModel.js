@@ -7,10 +7,12 @@ const ExtrasSchema=new mongoose.Schema({
     type: String,
     required: true
   },
-  // dailyCost:{
-  //   type: Number,
-  //   required: true
-  // },
+
+  dailyCost:{
+    type: Number,
+    required: true
+  },
+  
   // available:{
   //   type: Boolean,
   //   required: true

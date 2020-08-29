@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
+const vehicleController = require('../controllers/vehicleController');
 const auth=require("../middleware/auth")
 
 router.get('/login',userController.getLogin)
@@ -10,6 +11,8 @@ router.get('/register',userController.getSignup)
 //router.get("/makeanewadmin", userController.makeadmin)
 
 router.post('/register', userController.signup);
+
+//router.post('/newVehicle', vehicleController.addVehicle);
 
 //router.post('/login/admin', userController.loginAsAdmin);
 
@@ -29,15 +32,15 @@ router.delete('/user/:userId', userController.deleteUser);
 
 //router.get('/logout', userController.logout);
 
-router.get('/vehiclelisting', userController.allowIfLoggedin, userController.listVehicles);
+//router.get('/vehiclelisting', userController.allowIfLoggedin, userController.listVehicles);
 
-router.get('/allbookings', userController.listBookings);
+//router.get('/allbookings', userController.listBookings);
 
-router.post('/vehiclelisting', userController.configureBooking);
+//router.post('/vehiclelisting', userController.configureBooking);
 
-router.get('/booking', userController.configureBooking);
+//router.get('/booking', userController.configureBooking);
 
-router.post('/booking', userController.makeBooking);
+//router.post('/booking', userController.makeBooking);
 
 router.get("/", userController.showHome)
 
