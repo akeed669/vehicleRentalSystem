@@ -15,8 +15,14 @@ let vehicleForBooking=""
 
 exports.makeBooking = async (req, res, next) => {
   try {
+
     const { error } = validateBooking(req.body);
     if (error) return res.status(400).send(error.details[0].message);
+
+    const startDate = new Date(req.body.startDate)
+    const endDate = new Date(req.body.endDate)
+
+    if(endDate > new Date(startDate.getTime()+(14 * 24 * 60 * 60 * 1000))) return res.status(400).send("only 14 days max");
 
     const {customer, vehicle, bookingExtra, lateReturn} = req.body
     let insurance=true
@@ -29,7 +35,8 @@ exports.makeBooking = async (req, res, next) => {
     const bextra = await Extra.findById({ _id: req.body.bookingExtra });
     if (bextra.unitsAvailable == 0) return res.status(400).send('Desired extra not available');
 
-    const {startDate,endDate,rentCost} = await calculateRent(req,res,bvehicle,bextra,next)
+    const {rentCost} = await calculateRent(req,res,bvehicle,bextra,next)
+
 
     const bcustomer = await Customer.findById({ _id: req.body.customer});
     const diffTime = Math.abs(new Date() - bcustomer.dob);
@@ -76,13 +83,15 @@ exports.makeBooking = async (req, res, next) => {
 
 
 function validateBooking(req) {
+
   const schema = Joi.object({
     customer:Joi.string().required(),
     vehicle:Joi.string().required(),
     bookingExtra:Joi.string(),
     startDate:Joi.date().greater('now'),
+    //endDate:Joi.date().greater(Joi.ref('startDate')).max(Joi.ref('maxDate')).error(new Error("You can only rent a vehicle upto a maximum of 14 days")),
     endDate:Joi.date().greater(Joi.ref('startDate')),
-    lateReturn: Joi.string().min(5).max(255).required(),
+    lateReturn: Joi.boolean().required(),
     //rentCost:Joi.number().required()
   });
 

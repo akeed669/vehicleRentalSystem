@@ -23,7 +23,8 @@ const BookingSchema=new mongoose.Schema({
 
   endDate:{
     type: Date,
-    required: true
+    required: true,
+    
   },
 
   rentCost:{
@@ -40,7 +41,7 @@ const BookingSchema=new mongoose.Schema({
   },
 
   insurance:{
-    type: Boolean,    
+    type: Boolean,
     required:true
   }
 });
