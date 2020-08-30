@@ -25,11 +25,14 @@ exports.makeBooking = async (req, res, next) => {
     if(endDate > new Date(startDate.getTime()+(14 * 24 * 60 * 60 * 1000))) return res.status(400).send("only 14 days max");
 
     const {customer, vehicle, bookingExtra, lateReturn} = req.body
-    let insurance=true
-
+    const bcustomer = await Customer.findById({ _id: req.body.customer});
     //checking whether the desired vehicle is available
     const bvehicle = await Vehicle.findById({ _id: req.body.vehicle});
     if (bvehicle.carsAvailable == 0) return res.status(400).send('Desired car not available');
+
+    const insurance = await determineInsurance(req,res,bcustomer,bvehicle,next)
+
+
 
     //checking whether the desired extra is available
     const bextra = await Extra.findById({ _id: req.body.bookingExtra });
@@ -38,12 +41,13 @@ exports.makeBooking = async (req, res, next) => {
     const {rentCost} = await calculateRent(req,res,bvehicle,bextra,next)
 
 
-    const bcustomer = await Customer.findById({ _id: req.body.customer});
-    const diffTime = Math.abs(new Date() - bcustomer.dob);
-    const currentAge=Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 365));
-    if (currentAge < 25 && (bvehicle.vname!="Small Town Car")) {
-      insurance=false;
-    };
+
+
+    // const diffTime = Math.abs(new Date() - bcustomer.dob);
+    // const currentAge=Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 365));
+    // if (currentAge < 25 && (bvehicle.vname!="Small Town Car")) {
+    //   insurance=false;
+    // };
 
     const newBooking = new Booking({ customer, vehicle, startDate, endDate, bookingExtra, lateReturn, rentCost, insurance });
 
@@ -110,4 +114,12 @@ async function calculateRent(req,res,bvehicle,bextra,next){
   const extrasRent=bextra.dailyCost*rentDuration
   const rentCost=vehicleRent+extrasRent
   return {startDate,endDate,rentCost}
+}
+
+async function determineInsurance (req,res,bcustomer,bvehicle,next){
+  const diffTime = Math.abs(new Date() - bcustomer.dob);
+  const currentAge=Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 365));
+  if (currentAge < 25 && (bvehicle.vname!="Small Town Car")) {
+    return false;
+  }else{return true}
 }

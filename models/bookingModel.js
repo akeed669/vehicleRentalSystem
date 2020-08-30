@@ -24,12 +24,17 @@ const BookingSchema=new mongoose.Schema({
   endDate:{
     type: Date,
     required: true,
-    
+
   },
 
   rentCost:{
     type: Number,
     required: true
+  },
+
+  needExtras:{
+    type: Boolean,
+    required: false
   },
 
   bookingExtra:[{type:mongoose.Schema.Types.ObjectId, ref: 'extra', required: false}],
