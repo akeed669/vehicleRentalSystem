@@ -43,12 +43,11 @@ exports.makeBooking = async (req, res, next) => {
       const {vehicleRentCost,rentDuration} = await calculateVehicleRent(req,res,bvehicle,next)
       const eCost=await calculateExtras(req,res,bvehicle,bextra,rentDuration,next)
       rentCost=eCost+vehicleRentCost
-      //console.log(rentCost)
+
     }
     else{
-      //const needExtras=false
       const {vehicleRentCost,rentDuration} = await calculateVehicleRent(req,res,bvehicle,next)
-      rentCost=vehicleRentCost      
+      rentCost=vehicleRentCost
     }
 
 
@@ -141,4 +140,42 @@ async function determineInsurance (req,res,bcustomer,bvehicle,next){
   if (currentAge < 25 && (bvehicle.vname!="Small Town Car")) {
     return false;
   }else{return true}
+}
+
+exports.updateBooking = async (req, res, next) => {
+  try {
+    // const { error } = validateUserReg(req.body);
+    // if (error) return res.status(400).send(error.details[0].message);
+
+    const update = req.body
+    const bookingId = req.params.bookingId;
+    await Booking.findByIdAndUpdate(bookingId, update);
+    const booking = await Booking.findById(bookingId)
+    res.status(200).json({
+      data: booking,
+      message: 'Booking has been updated'
+    });
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.getBookings = async (req, res, next) => {
+  const bookings = await Booking.find({});
+  res.status(200).json({
+    data: bookings
+  });
+}
+
+exports.getBooking = async (req, res, next) => {
+  try {
+    const bookingId = req.params.bookingId;
+    const booking = await Booking.findById(bookingId);
+    if (!user) return next(new Error('Booking does not exist'));
+    res.status(200).json({
+      data: booking
+    });
+  } catch (error) {
+    next(error)
+  }
 }
