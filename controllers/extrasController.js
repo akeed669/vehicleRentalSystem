@@ -45,10 +45,10 @@ exports.updateExtra = async (req, res, next) => {
 
     await Extra.findByIdAndUpdate(extraId, update);
     const extra = await Extra.findById(extraId)
-    res.status(200).json({
-      data: extra,
-      message: 'Extra has been updated'
-    });
+    // res.status(200).json({
+    //   data: extra,
+    //   message: 'Extra has been updated'
+    // });
   } catch (error) {
     next(error)
   }

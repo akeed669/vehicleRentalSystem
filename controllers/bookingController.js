@@ -11,7 +11,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 
-let vehicleForBooking=""
+//let vehicleForBooking=""
 
 exports.makeBooking = async (req, res, next) => {
   try {
@@ -19,33 +19,36 @@ exports.makeBooking = async (req, res, next) => {
     const { error } = validateBooking(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
+    const {customer, vehicle, lateReturn} = req.body
+    const needExtras=JSON.parse(req.body.needExtras)
+    let rentCost=0
+    let bextra=""
     const startDate = new Date(req.body.startDate)
     const endDate = new Date(req.body.endDate)
 
-    const needExtras=req.body.needExtras
-    //let bextra=""
     if(endDate > new Date(startDate.getTime()+(14 * 24 * 60 * 60 * 1000))) return res.status(400).send("only 14 days max");
 
-    const {customer, vehicle, bookingExtra, lateReturn} = req.body
     const bcustomer = await Customer.findById({ _id: req.body.customer});
     //checking whether the desired vehicle is available
     const bvehicle = await Vehicle.findById({ _id: req.body.vehicle});
     if (bvehicle.carsAvailable == 0) return res.status(400).send('Desired car not available');
 
     const insurance = await determineInsurance(req,res,bcustomer,bvehicle,next)
-    let rentcost=0
-    if(needExtras){
-      //checking whether the desired extra is available
-      const bextra = await Extra.findById({ _id: req.body.bookingExtra });
-      if (bextra.unitsAvailable == 0) return res.status(400).send('Desired extra not available');
-      const needExtras=true
-      rentCost = await calculateRent(req,res,bvehicle,bextra,needExtras,next)
-      eCost=await calculateExtras(req,res,bvehicle,bextra,needExtras,next)
 
-      console.log(rentCost)
-    } else{
+    if(needExtras){
+
+      //checking whether the desired extra is available
+      bextra = await Extra.findById({ _id: req.body.bookingExtra });
+      if (bextra.unitsAvailable == 0) return res.status(400).send('Desired extra not available');
+      const {vehicleRentCost,rentDuration} = await calculateVehicleRent(req,res,bvehicle,next)
+      const eCost=await calculateExtras(req,res,bvehicle,bextra,rentDuration,next)
+      rentCost=eCost+vehicleRentCost
+      //console.log(rentCost)
+    }
+    else{
       //const needExtras=false
-      rentCost = await calculateRent(req,res,bvehicle,bextra,needExtras,next)
+      const {vehicleRentCost,rentDuration} = await calculateVehicleRent(req,res,bvehicle,next)
+      rentCost=vehicleRentCost      
     }
 
 
@@ -55,6 +58,8 @@ exports.makeBooking = async (req, res, next) => {
     // bcustomer.save()
 
     if(needExtras){
+
+      const bookingExtra = req.body.bookingExtra
 
       const newBooking = new Booking({ customer, vehicle, startDate, endDate, bookingExtra, lateReturn, rentCost, needExtras, insurance });
 
@@ -71,7 +76,12 @@ exports.makeBooking = async (req, res, next) => {
 
       await extrasController.updateExtra(req,res,next)
 
+      res.json({
+        data: newBooking
+      })
+
     }else{
+
       const newBooking = new Booking({ customer, vehicle, startDate, endDate, lateReturn, rentCost, insurance, needExtras });
 
       await newBooking.save();
@@ -82,13 +92,11 @@ exports.makeBooking = async (req, res, next) => {
       }
       //console.log(req)
       await vehicleController.updateVehicle(req,res,next)
+
+      res.json({
+        data: newBooking
+      })
     }
-
-
-    // res.json({
-    //   data: newBooking
-    // })
-
   } catch (error) {
     next(error)
   }
@@ -111,7 +119,7 @@ function validateBooking(req) {
   return schema.validate(req);
 }
 
-async function calculateRent(req,res,bvehicle,bextra,containsExtra,next){
+async function calculateVehicleRent(req,res,bvehicle,next){
   //get the dates
   const startDate = new Date(req.body.startDate)
   const endDate = new Date(req.body.endDate)
@@ -119,15 +127,12 @@ async function calculateRent(req,res,bvehicle,bextra,containsExtra,next){
   const diffTime = Math.abs(endDate - startDate);
   const rentDuration=Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   //calculating rent charges
-  const vehicleRent=bvehicle.dailyRent*rentDuration
-  let extrasRent=0
-  if(containsExtra){extrasRent=bextra.dailyCost*rentDuration}
-  const rentCost=vehicleRent+extrasRent
-  return rentCost
+  const vehicleRentCost=bvehicle.dailyRent*rentDuration
+  return {vehicleRentCost,rentDuration}
 }
 
-async function calculateExtras(){
-
+async function calculateExtras(req,res,bvehicle,bextra,rentDuration,next){
+  return bextra.dailyCost*rentDuration
 }
 
 async function determineInsurance (req,res,bcustomer,bvehicle,next){
