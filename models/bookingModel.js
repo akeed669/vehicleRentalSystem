@@ -34,7 +34,7 @@ const BookingSchema=new mongoose.Schema({
 
   needExtras:{
     type: Boolean,
-    required: false
+    required: true
   },
 
   bookingExtra:[{type:mongoose.Schema.Types.ObjectId, ref: 'extra', required: false}],
