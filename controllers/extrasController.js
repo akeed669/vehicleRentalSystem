@@ -34,17 +34,24 @@ exports.updateExtra = async (req, res, next) => {
     // const { error } = validateUserReg(req.body);
     // if (error) return res.status(400).send(error.details[0].message);
     //const update = req.body
-    const extraId = req.params.extraId || req.body.extra;
+    //const extraId = req.params.extraId
+    const extrasIds=req.body.unitsAvailable
     //const vehicleId = vid;
     //console.log(req.body.vehicle)
     //const vehicle = await Vehicle.findById(vehicleId)
     // const update={
     //   carsAvailable:vehicle.carsAvailable-1
     // }
-    const update = req.body
+    //const update = req.body
+    const update=
 
-    await Extra.findByIdAndUpdate(extraId, update);
-    const extra = await Extra.findById(extraId)
+    //console.log(extraId)
+
+    extraId.forEach((item,i) => {
+      Extra.findByIdAndUpdate(item, update);
+    });
+    //await Extra.findByIdAndUpdate(extraId, update);
+    //const extra = await Extra.findById(extraId)
     // res.status(200).json({
     //   data: extra,
     //   message: 'Extra has been updated'

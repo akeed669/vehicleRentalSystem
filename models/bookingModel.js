@@ -37,7 +37,7 @@ const BookingSchema=new mongoose.Schema({
     required: true
   },
 
-  bookingExtra:[{type:mongoose.Schema.Types.ObjectId, ref: 'extra', required: false}],
+  bookingExtras:[{type:mongoose.Schema.Types.ObjectId, ref: 'extra', required: false}],
 
   //bookingExtension:extensionSchema,
   lateReturn:{

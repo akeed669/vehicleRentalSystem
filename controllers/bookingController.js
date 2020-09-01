@@ -22,7 +22,10 @@ exports.makeBooking = async (req, res, next) => {
     const {customer, vehicle, lateReturn} = req.body
     const needExtras=JSON.parse(req.body.needExtras)
     let rentCost=0
-    let bextra=""
+    let bextra=null
+    let arrayExtras=req.body.bookingExtra
+
+    //get the dates
     const startDate = new Date(req.body.startDate)
     const endDate = new Date(req.body.endDate)
 
@@ -31,49 +34,52 @@ exports.makeBooking = async (req, res, next) => {
     const bcustomer = await Customer.findById({ _id: req.body.customer});
     //checking whether the desired vehicle is available
     const bvehicle = await Vehicle.findById({ _id: req.body.vehicle});
+    //console.log(req.body.vehicle)
     if (bvehicle.carsAvailable == 0) return res.status(400).send('Desired car not available');
 
     const insurance = await determineInsurance(req,res,bcustomer,bvehicle,next)
-
+    let newextraObjects=new Array()
     if(needExtras){
 
-      //checking whether the desired extra is available
-      bextra = await Extra.findById({ _id: req.body.bookingExtra });
-      if (bextra.unitsAvailable == 0) return res.status(400).send('Desired extra not available');
-      const {vehicleRentCost,rentDuration} = await calculateVehicleRent(req,res,bvehicle,next)
-      const eCost=await calculateExtras(req,res,bvehicle,bextra,rentDuration,next)
-      rentCost=eCost+vehicleRentCost
+      //checking whether the desired extras are available
+      for (const item of arrayExtras){
+        const bextra = await Extra.findById({ _id: item })
+        if (bextra.unitsAvailable == 0) return res.status(400).send('Desired extra not available');
+      }
 
+      const {vehicleRentCost,rentDuration} = await calculateVehicleRent(req,res,bvehicle,startDate,endDate,next)
+      const eCost=await calculateExtras(req,res,rentDuration,next)
+      rentCost=eCost+vehicleRentCost
     }
     else{
-      const {vehicleRentCost,rentDuration} = await calculateVehicleRent(req,res,bvehicle,next)
+      const {vehicleRentCost,rentDuration} = await calculateVehicleRent(req,res,bvehicle,startDate,endDate,next)
       rentCost=vehicleRentCost
     }
 
-
     //changing the customer status after a booking
     await Customer.findByIdAndUpdate(bcustomer._id, {repeater:true});
-    // bcustomer.repeater=true;
-    // bcustomer.save()
 
     if(needExtras){
 
-      const bookingExtra = req.body.bookingExtra
+      const bookingExtras = req.body.bookingExtra
 
-      const newBooking = new Booking({ customer, vehicle, startDate, endDate, bookingExtra, lateReturn, rentCost, needExtras, insurance });
+      const newBooking = new Booking({ customer, vehicle, startDate, endDate, bookingExtras, lateReturn, rentCost, needExtras, insurance });
 
       await newBooking.save();
-      //setting the reqwiest body to update vehicle and extras availability
-      req.body={
-        vehicle:bvehicle._id,
-        extra:bextra._id,
-        carsAvailable:bvehicle.carsAvailable-1,
-        unitsAvailable:bextra.unitsAvailable-1
-      }
-      //console.log(req)
-      await vehicleController.updateVehicle(req,res,next)
 
-      await extrasController.updateExtra(req,res,next)
+
+      await Vehicle.findByIdAndUpdate(bvehicle._id,{
+        carsAvailable:bvehicle.carsAvailable-1
+      });
+
+      arrayExtras.forEach(async(item,i) => {
+
+        const xxx = await Extra.findById({ _id: item });
+
+        await Extra.findByIdAndUpdate(item,{
+          unitsAvailable:xxx.unitsAvailable-1
+        });
+      });
 
       res.json({
         data: newBooking
@@ -85,12 +91,9 @@ exports.makeBooking = async (req, res, next) => {
 
       await newBooking.save();
 
-      req.body={
-        vehicle:bvehicle._id,
-        carsAvailable:bvehicle.carsAvailable-1,
-      }
-      //console.log(req)
-      await vehicleController.updateVehicle(req,res,next)
+      await Vehicle.findByIdAndUpdate(bvehicle._id,{
+        carsAvailable:bvehicle.carsAvailable-1
+      });
 
       res.json({
         data: newBooking
@@ -106,7 +109,7 @@ function validateBooking(req) {
   const schema = Joi.object({
     customer:Joi.string().required(),
     vehicle:Joi.string().required(),
-    bookingExtra:Joi.string(),
+    bookingExtra:Joi.array().items(Joi.string()),
     startDate:Joi.date().greater('now'),
     //endDate:Joi.date().greater(Joi.ref('startDate')).max(Joi.ref('maxDate')).error(new Error("You can only rent a vehicle upto a maximum of 14 days")),
     endDate:Joi.date().greater(Joi.ref('startDate')),
@@ -114,15 +117,10 @@ function validateBooking(req) {
     needExtras:Joi.boolean().required(),
     //rentCost:Joi.number().required()
   });
-
   return schema.validate(req);
 }
 
-async function calculateVehicleRent(req,res,bvehicle,next){
-  //get the dates
-  const startDate = new Date(req.body.startDate)
-  const endDate = new Date(req.body.endDate)
-  //calculating the number of days for renting vehicle
+async function calculateVehicleRent(req,res,bvehicle,startDate,endDate,next){
   const diffTime = Math.abs(endDate - startDate);
   const rentDuration=Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   //calculating rent charges
@@ -130,8 +128,19 @@ async function calculateVehicleRent(req,res,bvehicle,next){
   return {vehicleRentCost,rentDuration}
 }
 
-async function calculateExtras(req,res,bvehicle,bextra,rentDuration,next){
-  return bextra.dailyCost*rentDuration
+async function calculateExtras(req,res,rentDuration,next){
+
+  let totalExtrasCost=0
+  let arrayExtras=req.body.bookingExtra
+  let itemsProcessed = 0;
+
+  for (const item of arrayExtras){
+    const xxx = await Extra.findById({ _id: item })
+
+    totalExtrasCost+=xxx.dailyCost*rentDuration
+
+  }
+  return totalExtrasCost
 }
 
 async function determineInsurance (req,res,bcustomer,bvehicle,next){
@@ -144,9 +153,6 @@ async function determineInsurance (req,res,bcustomer,bvehicle,next){
 
 exports.updateBooking = async (req, res, next) => {
   try {
-    // const { error } = validateUserReg(req.body);
-    // if (error) return res.status(400).send(error.details[0].message);
-
     const update = req.body
     const bookingId = req.params.bookingId;
     await Booking.findByIdAndUpdate(bookingId, update);
