@@ -19,7 +19,8 @@ exports.makeBooking = async (req, res, next) => {
     const { error } = validateBooking(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const {customer, vehicle, lateReturn} = req.body
+    const {customer, vehicle} = req.body
+    const lateReturn=JSON.parse(req.body.lateReturn)
     const needExtras=JSON.parse(req.body.needExtras)
     let rentCost=0
     let bextra=null
@@ -27,18 +28,41 @@ exports.makeBooking = async (req, res, next) => {
 
     //get the dates
     const startDate = new Date(req.body.startDate)
+    //startDate.setHours(0,0,0,0)
     const endDate = new Date(req.body.endDate)
+
+    console.log(startDate)
 
     if(endDate > new Date(startDate.getTime()+(14 * 24 * 60 * 60 * 1000))) return res.status(400).send("only 14 days max");
 
     const bcustomer = await Customer.findById({ _id: req.body.customer});
+
+    //checking whether the customer has been blacklisted
+    if(bcustomer.blacklisted){
+      return res.status(400).send('You have been blacklisted!')
+    }
+
     //checking whether the desired vehicle is available
     const bvehicle = await Vehicle.findById({ _id: req.body.vehicle});
-    //console.log(req.body.vehicle)
     if (bvehicle.carsAvailable == 0) return res.status(400).send('Desired car not available');
 
+    //checking whether customer can be provided the late return option
+    if(lateReturn){
+      if (!bcustomer.repeater){
+        return res.status(400).send('This option is unfortunately unavailable for first time customers')
+      }
+    }
+
+    //checking whether insurance can be provided
     const insurance = await determineInsurance(req,res,bcustomer,bvehicle,next)
+
+    //give an alert if insurance is not applicable
+    if(!insurance){
+      console.log("No insurance for this booking!")
+    }
+
     let newextraObjects=new Array()
+
     if(needExtras){
 
       //checking whether the desired extras are available
@@ -56,9 +80,6 @@ exports.makeBooking = async (req, res, next) => {
       rentCost=vehicleRentCost
     }
 
-    //changing the customer status after a booking
-    await Customer.findByIdAndUpdate(bcustomer._id, {repeater:true});
-
     if(needExtras){
 
       const bookingExtras = req.body.bookingExtra
@@ -67,6 +88,8 @@ exports.makeBooking = async (req, res, next) => {
 
       await newBooking.save();
 
+      //changing the customer status after a booking
+      await Customer.findByIdAndUpdate(bcustomer._id, {repeater:true});
 
       await Vehicle.findByIdAndUpdate(bvehicle._id,{
         carsAvailable:bvehicle.carsAvailable-1
@@ -155,8 +178,21 @@ exports.updateBooking = async (req, res, next) => {
   try {
     const update = req.body
     const bookingId = req.params.bookingId;
+
+    // //check whether an extension is desired
+    // const oldbooking = await Booking.findById(bookingId)
+    // const oldReturnDate=oldbooking.endDate
+    // if(req.body.endDate){
+    //   if(req.body.endDate != oldReturnDate){
+    //     console.log("change needed")
+    //   }
+    // }else{
+    //   console.log("no change needed")
+    // }
+
+
     await Booking.findByIdAndUpdate(bookingId, update);
-    const booking = await Booking.findById(bookingId)
+    const updBooking = await Booking.findById(bookingId)
     res.status(200).json({
       data: booking,
       message: 'Booking has been updated'
