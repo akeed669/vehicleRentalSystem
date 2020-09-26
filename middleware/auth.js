@@ -7,19 +7,19 @@ module.exports = async (req, res, next) => {
   if (!token) return res.status(401).send('Access denied. No token provided.');
 
   try {
-    //const decoded = jwt.verify(token, config.get('jwtPrivateKey'));
+    const decoded = jwt.verify(token, config.get('jwtPrivateKey'));
     //const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
+    console.log(decoded)
     const { userId, exp } = await jwt.verify(token, process.env.JWT_SECRET);
-    // Check if token has expired
-    //console.log(userId)
+    //Check if token has expired
+    console.log(userId)
     if (exp < Date.now().valueOf() / 1000) {
       return res.status(401).json({ error: "JWT token has expired, please login to obtain a new one" });
     }
     res.locals.loggedInUser = await Customer.findById(userId);
-    //console.log(res.locals.loggedInUser)
+    console.log(res.locals.loggedInUser)
 
-    //req.user = decoded;
+    req.user = decoded;
     next();
   }
   catch (ex) {

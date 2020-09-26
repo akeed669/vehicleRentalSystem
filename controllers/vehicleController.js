@@ -15,8 +15,8 @@ exports.addVehicle = async (req, res, next) => {
     const vehicle = await Vehicle.findOne({ vname: req.body.vname });
     if (vehicle) return res.status(400).send('Vehicle already in database.');
 
-    const {vname, transmission, fuelType, dailyRent, carsAvailable} = req.body
-    const newVehicle = new Vehicle({ vname, transmission, fuelType, dailyRent, carsAvailable });
+    const {vname, transmission, fuelType, dailyRent, carsAvailable, vehicleType} = req.body
+    const newVehicle = new Vehicle({ vname, transmission, fuelType, dailyRent, carsAvailable,vehicleType });
 
     await newVehicle.save();
     res.json({
@@ -120,7 +120,8 @@ function validateVehicle(req) {
     transmission: Joi.string().min(6).max(9).required(),
     fuelType: Joi.string().min(6).max(6).required(),
     dailyRent: Joi.number().required(),
-    carsAvailable: Joi.number().required().integer()
+    carsAvailable: Joi.number().required().integer(),
+    vehicleType:Joi.string().required(),
   });
 
   return schema.validate(req);

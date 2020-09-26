@@ -50,6 +50,11 @@ const CustomerSchema = new Schema({
 //   return token;
 // }
 
+CustomerSchema.methods.generateAuthToken = function() {
+  const token = jwt.sign({ _id: this._id, name: this.name, username:this.username }, process.env.JWT_SECRET);
+  return token;
+}
+
 const Customer = mongoose.model('customer', CustomerSchema);
 
 // function validateUserReg(req) {

@@ -26,6 +26,12 @@ const VehicleSchema=new mongoose.Schema({
     type: Number,
     required: true
   },
+
+  vehicleType:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref: 'vehicleType',
+    required: true
+  },
   // available:{
   //   type: Boolean,
   //   default: true,

@@ -40,7 +40,7 @@ async function validatePassword(plainPassword, hashedPassword) {
 exports.signup = async (req, res, next) => {
   try {
     const { error } = validateUserReg(req.body);
-    console.log(error)
+
     if (error) return res.status(400).send(error.details[0].message);
 
     const user = await Customer.findOne({ username: req.body.username });
@@ -85,23 +85,36 @@ exports.getSignup= async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
+
     const { error } = validateUserLogin(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+    if (error) {return res.status(400).send(error.details[0].message)};
 
     const { username, password } = req.body;
     const user = await Customer.findOne({ username });
+    console.log("johhny")
+    console.log(user)
+    console.log("johhny")
     if (!user) return next(new Error('Username does not exist'));
 
     const validPassword = await validatePassword(password, user.password);
     if (!validPassword) return next(new Error('Password is not correct'))
 
-    const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d"
-    });
+    // const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+    //   expiresIn: "1d"
+    // });
+
+    const accessToken = user.generateAuthToken();
+
+    await Customer.findByIdAndUpdate(user._id, { accessToken })
+
+    res.send(accessToken);
+
+
 
     //console.log(accessToken)
-    await Customer.findByIdAndUpdate(user._id, { accessToken })
-    res.header('x-auth-token', accessToken).render("dashboard",{"currentUser":user});
+
+    //res.header('x-auth-token', accessToken).render("dashboard",{"currentUser":user});
+    //res.header('x-auth-token', accessToken);
     // if(user.role==="basic"){
     //   res.header('x-auth-token', accessToken).render("dashboard",{"currentUser":user});
     //
@@ -243,7 +256,7 @@ function validateUserReg(req) {
 
 function validateUserLogin(req) {
   const schema = Joi.object({
-    username: Joi.string().min(5).max(255).required().email(),
+    username: Joi.string().min(5).max(255).required().email().label("Username"),
     password: Joi.string().min(5).max(255).required()
   });
 
