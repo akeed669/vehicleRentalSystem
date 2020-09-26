@@ -50,16 +50,18 @@ exports.signup = async (req, res, next) => {
     const dob = new Date(req.body.dob)
     const hashedPassword = await hashPassword(password);
     const newUser = new Customer({ name, username, password: hashedPassword, blacklisted, repeater, dob });
-    const accessToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d"
-    });
+
+    const accessToken = newUser.generateAuthToken();
+
     newUser.accessToken = accessToken;
     await newUser.save();
     // res.json({
     //   data: newUser,
     //   accessToken
     // })
-    res.header('x-auth-token', accessToken).send(_.pick(newUser, ['_id', 'name', 'username', 'accessToken']));
+    res.header('x-auth-token', accessToken)
+    .header("access-control-expose-headers", "x-auth-token")
+    .send(_.pick(newUser, ['_id', 'name', 'username', 'accessToken']));
     //res.render("login")
   } catch (error) {
     next(error)
