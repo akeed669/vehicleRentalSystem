@@ -24,7 +24,7 @@ class RegisterForm extends Form {
     try {
       console.log(this.state.data)
       const response = await userService.register(this.state.data);
-      console.log("ho3")
+      console.log(response)
       auth.loginWithJwt(response.headers["x-auth-token"]);
 
       window.location = "/";
