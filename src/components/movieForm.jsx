@@ -1,7 +1,7 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "./common/form";
-import { getMovie, saveMovie } from "../services/movieService";
+import { getVehicle, saveVehicle } from "../services/vehicleService";
 import { getGenres } from "../services/genreService";
 
 class MovieForm extends Form {
@@ -41,7 +41,7 @@ class MovieForm extends Form {
       const movieId = this.props.match.params.id;
       if (movieId === "new") return;
 
-      const { data: movie } = await getMovie(movieId);
+      const { data: movie } = await getVehicle(movieId);
       this.setState({ data: this.mapToViewModel(movie) });
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
@@ -65,7 +65,7 @@ class MovieForm extends Form {
   }
 
   doSubmit = async () => {
-    await saveMovie(this.state.data);
+    await saveVehicle(this.state.data);
 
     this.props.history.push("/movies");
   };

@@ -4,12 +4,12 @@ import { Link } from "react-router-dom";
 import Like from "./common/like";
 import Table from "./common/table";
 
-class MoviesTable extends Component {
+class VehiclesTable extends Component {
   columns = [
     {
       path: "vname",
       label: "Vehicle",
-      content: movie => <Link to={`/movies/${movie._id}`}>{movie.vname}</Link>
+      content: vehicle => <Link to={`/vehicles/${vehicle._id}`}>{vehicle.vname}</Link>
     },
     //{ path: "vehicleType.vname", label: "Vehicle Type" },
     { path: "carsAvailable", label: "Stock" },
@@ -19,9 +19,9 @@ class MoviesTable extends Component {
 
   deleteColumn = {
     key: "delete",
-    content: movie => (
+    content: vehicle => (
       <button
-        onClick={() => this.props.onDelete(movie)}
+        onClick={() => this.props.onDelete(vehicle)}
         className="btn btn-danger btn-sm"
       >
         Delete
@@ -36,11 +36,11 @@ class MoviesTable extends Component {
   }
 
   render() {
-    const { movies, sortColumn, onSort } = this.props;
+    const { vehicles, sortColumn, onSort } = this.props;
     return (
       <Table
         columns={this.columns}
-        data={movies}
+        data={vehicles}
         sortColumn={sortColumn}
         onSort={onSort}
       />
@@ -48,4 +48,4 @@ class MoviesTable extends Component {
   }
 }
 
-export default MoviesTable;
+export default VehiclesTable;
