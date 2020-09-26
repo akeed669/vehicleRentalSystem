@@ -25,7 +25,7 @@ async function validatePassword(plainPassword, hashedPassword) {
 // exports.makeadmin = async (req, res, next) =>{
 //   try{
 //     const hashedPassword = await hashPassword(process.env.ADMIN_PASS);
-//     const myAdmin = new Customer({ cname:"admin", email:"admin@z.com", password: hashedPassword, blacklisted:false, repeater:false, dob:"03/25/2015", role:"admin" });
+//     const myAdmin = new Customer({ name:"admin", email:"admin@z.com", password: hashedPassword, blacklisted:false, repeater:false, dob:"03/25/2015", role:"admin" });
 //     const accessToken = jwt.sign({ userId: myAdmin._id }, process.env.JWT_SECRET, {
 //       expiresIn: "1d"
 //     });
@@ -40,15 +40,16 @@ async function validatePassword(plainPassword, hashedPassword) {
 exports.signup = async (req, res, next) => {
   try {
     const { error } = validateUserReg(req.body);
+    console.log(error)
     if (error) return res.status(400).send(error.details[0].message);
 
-    const user = await Customer.findOne({ email: req.body.email });
+    const user = await Customer.findOne({ username: req.body.username });
     if (user) return res.status(400).send('User already registered.');
 
-    const {cname, email, password, blacklisted, repeater,role } = req.body
+    const {name, username, password, blacklisted, repeater} = req.body
     const dob = new Date(req.body.dob)
     const hashedPassword = await hashPassword(password);
-    const newUser = new Customer({ cname, email, password: hashedPassword, blacklisted, repeater, dob, role: role || "basic" });
+    const newUser = new Customer({ name, username, password: hashedPassword, blacklisted, repeater, dob });
     const accessToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "1d"
     });
@@ -58,7 +59,7 @@ exports.signup = async (req, res, next) => {
     //   data: newUser,
     //   accessToken
     // })
-    res.header('x-auth-token', accessToken).send(_.pick(newUser, ['_id', 'cname', 'email', 'accessToken']));
+    res.header('x-auth-token', accessToken).send(_.pick(newUser, ['_id', 'name', 'username', 'accessToken']));
     //res.render("login")
   } catch (error) {
     next(error)
@@ -87,9 +88,9 @@ exports.login = async (req, res, next) => {
     const { error } = validateUserLogin(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const { email, password } = req.body;
-    const user = await Customer.findOne({ email });
-    if (!user) return next(new Error('Email does not exist'));
+    const { username, password } = req.body;
+    const user = await Customer.findOne({ username });
+    if (!user) return next(new Error('Username does not exist'));
 
     const validPassword = await validatePassword(password, user.password);
     if (!validPassword) return next(new Error('Password is not correct'))
@@ -230,10 +231,10 @@ exports.showHome=async (req, res, next) => {
 
 function validateUserReg(req) {
   const schema = Joi.object({
-    cname: Joi.string().min(5).max(50).required(),
-    email: Joi.string().min(5).max(255).required().email(),
+    name: Joi.string().min(5).max(50).required(),
+    username: Joi.string().min(5).max(255).required().email(),
     password: Joi.string().min(5).max(255).required(),
-    role: Joi.string().min(5).max(5),
+    //role: Joi.string().min(5).max(5),
     dob:Joi.date().less(new Date().toLocaleDateString())
   });
 
@@ -242,7 +243,7 @@ function validateUserReg(req) {
 
 function validateUserLogin(req) {
   const schema = Joi.object({
-    email: Joi.string().min(5).max(255).required().email(),
+    username: Joi.string().min(5).max(255).required().email(),
     password: Joi.string().min(5).max(255).required()
   });
 

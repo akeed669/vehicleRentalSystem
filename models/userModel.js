@@ -5,13 +5,13 @@ const jwt = require('jsonwebtoken');
 
 const CustomerSchema = new Schema({
 
-  cname:{
+  name:{
     type: String,
     required: true,
     minlength:5,
     maxlength:50
   },
-  email: {
+  username: {
     type: String,
     required: true,
     trim: true, //white spaces will be removed from both sides of the string.
@@ -39,11 +39,6 @@ const CustomerSchema = new Schema({
   dob:{
     type: Date,
     required: true
-  },
-  role: {
-    type: String,
-    default: 'basic',
-    enum: ["basic", "admin"]
   },
   accessToken: {
     type: String

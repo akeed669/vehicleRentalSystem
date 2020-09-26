@@ -132,7 +132,7 @@ function validateBooking(req) {
   const schema = Joi.object({
     customer:Joi.string().required(),
     vehicle:Joi.string().required(),
-    bookingExtra:Joi.array().items(Joi.string()),
+    bookingExtra:Joi.array().min(1).items(Joi.string()),
     startDate:Joi.date().greater('now'),
     //endDate:Joi.date().greater(Joi.ref('startDate')).max(Joi.ref('maxDate')).error(new Error("You can only rent a vehicle upto a maximum of 14 days")),
     endDate:Joi.date().greater(Joi.ref('startDate')),

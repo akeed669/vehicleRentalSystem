@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const Vehicle = require('../models/vehicleModel');
+const VehicleType = require('../models/vehicleTypeModel');
 const { roles } = require('../roles')
 const mongoose=require("mongoose")
 const jwt = require('jsonwebtoken');
@@ -27,10 +28,38 @@ exports.addVehicle = async (req, res, next) => {
   }
 }
 
+exports.addVehicleType = async (req, res, next) => {
+  try {
+    const { error } = validateVehicleType(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+
+    const vehicleType = await VehicleType.findOne({ vehicleTypeName: req.body.vname });
+    if (vehicleType) return res.status(400).send('Vehicle type already exists in database.');
+
+    const {vehicleTypeName} = req.body
+    const newVehicleType = new VehicleType({ vehicleTypeName });
+
+    await newVehicleType.save();
+    res.json({
+      data: newVehicleType
+    })
+
+  } catch (error) {
+    next(error)
+  }
+}
+
 exports.getVehicles = async (req, res, next) => {
   const vehicles = await Vehicle.find({});
   res.status(200).json({
     data: vehicles
+  });
+}
+
+exports.getVehicleTypes = async (req, res, next) => {
+  const vehicleTypes = await VehicleType.find({});
+  res.status(200).json({
+    data: vehicleTypes
   });
 }
 
@@ -90,8 +119,16 @@ function validateVehicle(req) {
     vname: Joi.string().min(3).max(50).required(),
     transmission: Joi.string().min(6).max(9).required(),
     fuelType: Joi.string().min(6).max(6).required(),
-    dailyRent: Joi.string().required().number(),
+    dailyRent: Joi.number().required(),
     carsAvailable: Joi.number().required().integer()
+  });
+
+  return schema.validate(req);
+}
+
+function validateVehicleType(req) {
+  const schema = Joi.object({
+    vehicleTypeName: Joi.string().min(3).max(50).required(),
   });
 
   return schema.validate(req);
