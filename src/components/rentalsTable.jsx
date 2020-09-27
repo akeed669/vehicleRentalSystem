@@ -4,24 +4,26 @@ import { Link } from "react-router-dom";
 import Like from "./common/like";
 import Table from "./common/table";
 
-class VehiclesTable extends Component {
+class RentalsTable extends Component {
   columns = [
-    {
-      path: "vname",
-      label: "Vehicle",
-      content: vehicle => <Link to={`/vehicles/${vehicle._id}`}>{vehicle.vname}</Link>
-    },
-    //{ path: "vehicleType.vname", label: "Vehicle Type" },
-    { path: "carsAvailable", label: "Cars Available" },
-    { path: "dailyRent", label: "Daily Rental Rate" },
+    // {
+    //   path: "vname",
+    //   label: "Rental",
+    //   content: rental => <Link to={`/rentals/${rental._id}`}>{rental.vname}</Link>
+    // },
+    { path: "startDate", label: "From" },
+    { path: "endDate", label: "Until" },
+    { path: "lateReturn", label: "Returning Late" },
+    { path: "insurance", label: "Insurance covered" },
+    { path: "rentCost", label: "Rental Charges" },
 
   ];
 
   deleteColumn = {
     key: "delete",
-    content: vehicle => (
+    content: rental => (
       <button
-        onClick={() => this.props.onDelete(vehicle)}
+        onClick={() => this.props.onDelete(rental)}
         className="btn btn-danger btn-sm"
       >
         Delete
@@ -36,11 +38,11 @@ class VehiclesTable extends Component {
   }
 
   render() {
-    const { vehicles, sortColumn, onSort } = this.props;
+    const { rentals, sortColumn, onSort } = this.props;
     return (
       <Table
         columns={this.columns}
-        data={vehicles}
+        data={rentals}
         sortColumn={sortColumn}
         onSort={onSort}
       />
@@ -48,4 +50,4 @@ class VehiclesTable extends Component {
   }
 }
 
-export default VehiclesTable;
+export default RentalsTable;

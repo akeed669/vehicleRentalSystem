@@ -2,29 +2,30 @@ import http from "./httpService";
 import { apiUrl } from "../config.json";
 
 const apiEndpoint = apiUrl + "/booking";
+const apiEndpoint2 = apiUrl + "/bookings";
 
-function bookingUrl(id) {
+function rentalUrl(id) {
   return `${apiEndpoint}/${id}`;
 }
 
-export function getBookings() {
-  return http.get(apiEndpoint);
+export function getRentals() {
+  return http.get(apiEndpoint2);
 }
 
-export function getBooking(bookingId) {
-  return http.get(bookingUrl(bookingId));
+export function getRental(rentalId) {
+  return http.get(rentalUrl(rentalId));
 }
 
-export function saveBooking(booking) {
-  if (booking._id) {
-    const body = { ...booking };
+export function saveRental(rental) {
+  if (rental._id) {
+    const body = { ...rental };
     delete body._id;
-    return http.put(bookingUrl(booking._id), body);
+    return http.put(rentalUrl(rental._id), body);
   }
 
-  return http.post(apiEndpoint, booking);
+  return http.post(apiEndpoint, rental);
 }
 
-export function deleteBooking(bookingId) {
-  return http.delete(bookingUrl(bookingId));
+export function deleteRental(rentalId) {
+  return http.delete(rentalUrl(rentalId));
 }

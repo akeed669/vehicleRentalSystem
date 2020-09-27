@@ -116,6 +116,7 @@ class Movies extends Component {
     if (count === 0) return <p>There are no vehicles in the database.</p>;
 
     const { totalCount, data: vehicles } = this.getPagedData();
+    console.log(vehicles)
 
     return (
       <div className="row">

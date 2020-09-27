@@ -3,7 +3,7 @@ import Joi from "joi-browser";
 import Form from "./common/form";
 import { getVehicles, getVehicle, saveVehicle } from "../services/vehicleService";
 import { getExtras } from "../services/extrasService";
-import { getBooking, saveBooking } from "../services/rentalService";
+import { getRental, saveRental } from "../services/rentalService";
 
 class BookingForm extends Form {
   state = {
@@ -131,8 +131,8 @@ class BookingForm extends Form {
   doSubmit = async () => {
     const {data:bookingData}=this.state;
     console.log(bookingData);
-    await saveBooking(bookingData);
-    //this.props.history.push("/movies");
+    await saveRental(bookingData);
+    this.props.history.push("/movies");
   };
 
   render() {

@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { Route, Redirect, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
+import Customers from "./components/customers";
 import Movies from "./components/movies";
 import BookingForm from "./components/bookingForm";
-import Customers from "./components/customers";
 import Rentals from "./components/rentals";
 import NotFound from "./components/notFound";
 import NavBar from "./components/navBar";
@@ -42,12 +42,15 @@ class App extends Component {
             //<ProtectedRoute path="/vehicles/:id" component={BookingForm} />
             <ProtectedRoute path="/rentals/:id"
             render={props => <BookingForm user={user} />} />
-            <Route
+            <ProtectedRoute
               path="/movies"
               render={props => <Movies {...props} user={user} />}
             />
-            <Route path="/customers" component={Customers} />
-            <Route path="/rentals" component={Rentals} />
+            <ProtectedRoute
+            path="/customers"
+            render={props => <Customers {...props} user={user} />}
+            />
+            <ProtectedRoute path="/rentals" component={Rentals} />
             <Route path="/not-found" component={NotFound} />
             <Redirect from="/" exact to="/movies" />
             <Redirect to="/not-found" />
