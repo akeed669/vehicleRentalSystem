@@ -3,7 +3,7 @@ import { Route, Redirect, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import Movies from "./components/movies";
-import MovieForm from "./components/movieForm";
+import BookingForm from "./components/bookingForm";
 import Customers from "./components/customers";
 import Rentals from "./components/rentals";
 import NotFound from "./components/notFound";
@@ -23,7 +23,7 @@ class App extends Component {
 
   componentDidMount() {
     const user = auth.getCurrentUser();
-    console.log(user)
+    //console.log(user)
     this.setState({ user });
   }
 
@@ -39,7 +39,9 @@ class App extends Component {
             <Route path="/register" component={RegisterForm} />
             <Route path="/login" component={LoginForm} />
             <Route path="/logout" component={Logout} />
-            <ProtectedRoute path="/vehicles/:id" component={MovieForm} />
+            //<ProtectedRoute path="/vehicles/:id" component={BookingForm} />
+            <ProtectedRoute path="/rentals/:id"
+            render={props => <BookingForm user={user} />} />
             <Route
               path="/movies"
               render={props => <Movies {...props} user={user} />}

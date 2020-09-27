@@ -4,9 +4,9 @@ import Form from "./common/form";
 import { getVehicle, saveVehicle } from "../services/vehicleService";
 import { getGenres } from "../services/genreService";
 
-class MovieForm extends Form {
+class BookingForm extends Form {
   state = {
-    data: { title: "", genreId: "", numberInStock: "", dailyRentalRate: "" },
+    data: { title: "", genreId: "", numberInStock: "", dailyRentalRate: "", start:"", end:"", extrasNeeded:false},
     genres: [],
     errors: {}
   };
@@ -28,7 +28,18 @@ class MovieForm extends Form {
       .required()
       .min(0)
       .max(10)
-      .label("Daily Rental Rate")
+      .label("Daily Rental Rate"),
+    start:Joi.date()
+    .required()
+    .greater('now')
+    .label("Start Date"),
+    end:Joi.date()
+    .required()
+    .greater(Joi.ref('start'))
+    .label("Start Date"),
+    extrasNeeded:Joi.boolean()
+    .required()
+    .label("Extras Required")
   };
 
   async populateGenres() {
@@ -73,12 +84,15 @@ class MovieForm extends Form {
   render() {
     return (
       <div>
-        <h1>Movie Form</h1>
+        <h1>Booking Form</h1>
         <form onSubmit={this.handleSubmit}>
           {this.renderInput("title", "Title")}
           {this.renderSelect("genreId", "Genre", this.state.genres)}
           {this.renderInput("numberInStock", "Number In Stock", "number")}
           {this.renderInput("dailyRentalRate", "Rate")}
+          {this.renderInput("start", "Start Date","date")}
+          {this.renderInput("end", "End Date","date")}
+          {this.renderInput("extrasNeeded", "Extras Required","checkbox")}
           {this.renderButton("Save")}
         </form>
       </div>
@@ -86,4 +100,4 @@ class MovieForm extends Form {
   }
 }
 
-export default MovieForm;
+export default BookingForm;
