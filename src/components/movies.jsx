@@ -25,8 +25,6 @@ class Movies extends Component {
     const { data:genresObject } = await getGenres();
     const genresArray=genresObject.data;
 
-    console.log(genresArray)
-
     const genres = [{ _id: "", vehicleTypeName: "All Vehicles" },...genresArray];
 
     const { data: vehiclesObject } = await getVehicles();
@@ -85,14 +83,15 @@ class Movies extends Component {
       vehicles: allMovies
     } = this.state;
 
+
     let filtered = allMovies;
-    console.log(filtered)
+
     if (searchQuery)
       filtered = allMovies.filter(m =>
         m.vname.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
     else if (selectedGenre && selectedGenre._id) {
-      filtered = allMovies.filter(m => m.vehicleType._id === selectedGenre._id);
+      filtered = allMovies.filter(m => m.vehicleType === selectedGenre._id);
     }
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
@@ -117,7 +116,7 @@ class Movies extends Component {
     if (count === 0) return <p>There are no vehicles in the database.</p>;
 
     const { totalCount, data: vehicles } = this.getPagedData();
-    console.log(totalCount)
+    
     return (
       <div className="row">
         <div className="col-3">
@@ -135,7 +134,7 @@ class Movies extends Component {
               className="btn btn-primary"
               style={{ marginBottom: 20 }}
             >
-              New Movie
+              New Rental
             </Link>
           )}
           <p>Showing {totalCount} vehicles in the database.</p>
