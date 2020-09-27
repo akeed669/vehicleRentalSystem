@@ -4,9 +4,9 @@ const userController = require('../controllers/userController');
 const vehicleController = require('../controllers/vehicleController');
 const auth=require("../middleware/auth")
 
-router.get('/login',userController.getLogin)
+// router.get('/login',userController.getLogin)
 
-router.get('/register',userController.getSignup)
+// router.get('/register',userController.getSignup)
 
 //router.get("/makeanewadmin", userController.makeadmin)
 
@@ -22,7 +22,9 @@ router.get('/user/:userId', userController.getUser);
 
 //router.get('/users',userController.allowIfLoggedin, userController.grantAccess('readAny', 'profile'), userController.getUsers);
 
-router.get('/users', auth, userController.getUsers);
+// router.get('/users', auth, userController.getUsers);
+
+router.get('/users', userController.getUsers);
 
 //router.put('/user/:userId', userController.allowIfLoggedin, userController.grantAccess('updateAny', 'profile'), userController.updateUser);
 router.put('/user/:userId', userController.updateUser);

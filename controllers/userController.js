@@ -46,10 +46,10 @@ exports.signup = async (req, res, next) => {
     const user = await Customer.findOne({ username: req.body.username });
     if (user) return res.status(400).send('User already registered.');
 
-    const {name, username, password, blacklisted, repeater} = req.body
+    const {name, username, password, blacklisted, repeater,role} = req.body
     const dob = new Date(req.body.dob)
     const hashedPassword = await hashPassword(password);
-    const newUser = new Customer({ name, username, password: hashedPassword, blacklisted, repeater, dob });
+    const newUser = new Customer({ name, username, password: hashedPassword, blacklisted, repeater, role:role||"basic", dob });
 
     const accessToken = newUser.generateAuthToken();
 
@@ -68,21 +68,21 @@ exports.signup = async (req, res, next) => {
   }
 }
 
-exports.getLogin= async (req, res, next) => {
-  try {
-    res.render("login")
-  } catch (error) {
-    next(error);
-  }
-}
-
-exports.getSignup= async (req, res, next) => {
-  try {
-    res.render("register")
-  } catch (error) {
-    next(error);
-  }
-}
+// exports.getLogin= async (req, res, next) => {
+//   try {
+//     res.render("login")
+//   } catch (error) {
+//     next(error);
+//   }
+// }
+//
+// exports.getSignup= async (req, res, next) => {
+//   try {
+//     res.render("register")
+//   } catch (error) {
+//     next(error);
+//   }
+// }
 
 
 exports.login = async (req, res, next) => {
@@ -140,6 +140,7 @@ exports.getUsers = async (req, res, next) => {
   res.status(200).json({
     data: users
   });
+  // res.send(users);
 }
 
 exports.getUser = async (req, res, next) => {
@@ -249,7 +250,7 @@ function validateUserReg(req) {
     name: Joi.string().min(5).max(50).required(),
     username: Joi.string().min(5).max(255).required().email(),
     password: Joi.string().min(5).max(255).required(),
-    //role: Joi.string().min(5).max(5),
+    role: Joi.string().min(5).max(5),
     dob:Joi.date().less(new Date().toLocaleDateString())
   });
 
