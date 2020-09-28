@@ -39,7 +39,7 @@ class App extends Component {
             <Route path="/register" component={RegisterForm} />
             <Route path="/login" component={LoginForm} />
             <Route path="/logout" component={Logout} />
-            //<ProtectedRoute path="/vehicles/:id" component={BookingForm} />
+            <ProtectedRoute path="/user/:id" component={BookingForm} />
             <ProtectedRoute path="/rentals/:id"
             render={props => <BookingForm user={user} />} />
             <ProtectedRoute
