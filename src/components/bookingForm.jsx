@@ -68,17 +68,19 @@ class BookingForm extends Form {
   async populateExtras() {
     const { data: extrasObject } = await getExtras();
     const myExtras=extrasObject.data;
-    console.log(myExtras);
     this.setState({extras:myExtras});
   }
 
-  async populateMovie() {
+  async populateBooking() {
     try {
-      const movieId = this.props.match.params.id;
-      if (movieId === "new") return;
+      const bookingId = this.props.match.params.id;
 
-      const { data: movie } = await getVehicle(movieId);
-      this.setState({ data: this.mapToViewModel(movie) });
+      if (bookingId === "new") return;
+
+      const { data: booking } = await getRental(bookingId);      
+
+      this.setState({ data: this.mapToViewModel(booking.data) });
+      console.log(this.state.data)
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
         this.props.history.replace("/not-found");
@@ -87,6 +89,7 @@ class BookingForm extends Form {
 
   async componentDidMount() {
     //await this.populateGenres();
+    await this.populateBooking();
     await this.populateVehicles();
 
     await this.populateExtras().then(() => {
@@ -115,16 +118,19 @@ class BookingForm extends Form {
     //
     // this.setState({ vehicles, genres });
     //
-    // await this.populateMovie();
+
   }
 
-  mapToViewModel(movie) {
+  mapToViewModel(booking) {
     return {
-      _id: movie._id,
-      title: movie.title,
-      genreId: movie.genre._id,
-      numberInStock: movie.numberInStock,
-      dailyRentalRate: movie.dailyRentalRate
+
+      // _id: booking._id,
+      vehicle:booking.vehicle,
+      startDate:booking.startDate,
+      // title: booking.title,
+      // genreId: booking.genre._id,
+      // numberInStock: booking.numberInStock,
+      // dailyRentalRate: booking.dailyRentalRate
     };
   }
 
