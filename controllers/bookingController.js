@@ -15,17 +15,16 @@ const _ = require('lodash');
 
 exports.makeBooking = async (req, res, next) => {
   try {
-
+    console.log("choci")
     const { error } = validateBooking(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const {customer, vehicle} = req.body
-    console.log(customer)
-    const lateReturn=JSON.parse(req.body.lateReturn)
-    const needExtras=JSON.parse(req.body.needExtras)
-    let rentCost=0
-    let bextra=null
-    let arrayExtras=req.body.bookingExtra
+    const {customer, vehicle} = req.body;
+    const lateReturn=JSON.parse(req.body.lateReturn);
+    const needExtras=JSON.parse(req.body.needExtras);
+    let rentCost=0;
+    let bextra=null;
+    let arrayExtras=req.body.bookingExtra;
 
     //get the dates
     const startDate = new Date(req.body.startDate)
@@ -48,7 +47,7 @@ exports.makeBooking = async (req, res, next) => {
     //checking whether customer can be provided the late return option
     if(lateReturn){
       if (!bcustomer.repeater){
-        return res.status(400).send('This option is unfortunately unavailable for first time customers')
+        return res.status(400).send('This option is unfortunately unavailable only for first time customers')
       }
     }
 
@@ -85,9 +84,11 @@ exports.makeBooking = async (req, res, next) => {
 
       const bookingId = req.params.bookingId;
 
+      const isNewBooking = bookingId === undefined ? true : false;
+
       const bookingObj={ customer, vehicle, startDate, endDate, bookingExtras, lateReturn, rentCost, needExtras, insurance };
 
-      if(bookingId !== ""){
+      if(!isNewBooking){
 
         await Booking.findByIdAndUpdate(bookingId, bookingObj);
         const updatedBooking = await Booking.findById(bookingId)
@@ -96,14 +97,17 @@ exports.makeBooking = async (req, res, next) => {
           message: 'Booking has been updated'
         });
 
-      }
-
-      else{
+      } else {
         const newBooking = new Booking(bookingObj);
+        console.log("thambi")
         await newBooking.save();
+
+        res.status(200).json({
+          data: newBooking,
+          message: 'Booking has been created'
+        })
+
       }
-
-
       //changing the customer status after a booking
       await Customer.findByIdAndUpdate(bcustomer._id, {repeater:true});
 
@@ -119,10 +123,6 @@ exports.makeBooking = async (req, res, next) => {
           unitsAvailable:xxx.unitsAvailable-1
         });
       });
-
-      res.json({
-        data: newBooking
-      })
 
     }else{
 
@@ -190,33 +190,33 @@ async function determineInsurance (req,res,bcustomer,bvehicle,next){
   }else{return true}
 }
 
-exports.updateBooking = async (req, res, next) => {
-  try {
-    const update = req.body
-    const bookingId = req.params.bookingId;
-
-    // //check whether an extension is desired
-    // const oldbooking = await Booking.findById(bookingId)
-    // const oldReturnDate=oldbooking.endDate
-    // if(req.body.endDate){
-    //   if(req.body.endDate != oldReturnDate){
-    //     console.log("change needed")
-    //   }
-    // }else{
-    //   console.log("no change needed")
-    // }
-
-
-    await Booking.findByIdAndUpdate(bookingId, update);
-    const updatedBooking = await Booking.findById(bookingId)
-    res.status(200).json({
-      data: updatedBooking,
-      message: 'Booking has been updated'
-    });
-  } catch (error) {
-    next(error)
-  }
-}
+// exports.updateBooking = async (req, res, next) => {
+//   try {
+//     const update = req.body
+//     const bookingId = req.params.bookingId;
+//
+//     // //check whether an extension is desired
+//     // const oldbooking = await Booking.findById(bookingId)
+//     // const oldReturnDate=oldbooking.endDate
+//     // if(req.body.endDate){
+//     //   if(req.body.endDate != oldReturnDate){
+//     //     console.log("change needed")
+//     //   }
+//     // }else{
+//     //   console.log("no change needed")
+//     // }
+//
+//
+//     await Booking.findByIdAndUpdate(bookingId, update);
+//     const updatedBooking = await Booking.findById(bookingId)
+//     res.status(200).json({
+//       data: updatedBooking,
+//       message: 'Booking has been updated'
+//     });
+//   } catch (error) {
+//     next(error)
+//   }
+// }
 
 exports.getBookings = async (req, res, next) => {
   const bookings = await Booking.find({});
