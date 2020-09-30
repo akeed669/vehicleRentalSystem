@@ -51,7 +51,9 @@ const CustomerSchema = new Schema({
 });
 
 CustomerSchema.methods.generateAuthToken = function() {
-  const token = jwt.sign({ _id: this._id, name: this.name, username:this.username }, process.env.JWT_SECRET);
+  const token = jwt.sign({ _id: this._id, name: this.name, username:this.username, role:this.role }, process.env.JWT_SECRET,{
+    expiresIn: "1d"
+  });
   return token;
 }
 

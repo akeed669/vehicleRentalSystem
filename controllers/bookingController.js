@@ -221,3 +221,11 @@ exports.getBooking = async (req, res, next) => {
     next(error)
   }
 }
+
+exports.getUserBookings = async (req, res, next) => {
+  const userId = req.params.userId;
+  const bookings = await Booking.find({customer:userId});
+  res.status(200).json({
+    data: bookings
+  });
+}

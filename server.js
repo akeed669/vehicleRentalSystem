@@ -38,16 +38,16 @@ mongoose
 })
 .catch (error => console.error("Could not connect",error))
 
-
-
 // app.use(async (req, res, next) => {
 //   if (req.header["x-access-token"]) {
 //     const accessToken = req.header["x-access-token"];
-//     const { userId, exp } = await jwt.verify(accessToken, process.env.JWT_SECRET);
+//     const thambi = await jwt.verify(accessToken, process.env.JWT_SECRET);
+//     // console.log(thambi)
+//     // console.log("thambi")
 //     // Check if token has expired
-//     if (exp < Date.now().valueOf() / 1000) {
-//       return res.status(401).json({ error: "JWT token has expired, please login to obtain a new one" });
-//     }
+//     // if (exp < Date.now().valueOf() / 1000) {
+//     //   return res.status(401).json({ error: "JWT token has expired, please login to obtain a new one" });
+//     // }
 //     res.locals.loggedInUser = await Customer.findById(userId); next();
 //   } else {
 //     next();

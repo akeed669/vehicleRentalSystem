@@ -59,9 +59,10 @@ exports.signup = async (req, res, next) => {
     //   data: newUser,
     //   accessToken
     // })
+
     res.header('x-auth-token', accessToken)
     .header("access-control-expose-headers", "x-auth-token")
-    .send(_.pick(newUser, ['_id', 'name', 'username', 'accessToken']));
+    .send(_.pick(newUser, ['_id', 'name', 'username', 'role', 'accessToken']));
     //res.render("login")
   } catch (error) {
     next(error)
@@ -93,9 +94,7 @@ exports.login = async (req, res, next) => {
 
     const { username, password } = req.body;
     const user = await Customer.findOne({ username });
-    console.log("johhny")
-    console.log(user)
-    console.log("johhny")
+
     if (!user) return next(new Error('Username does not exist'));
 
     const validPassword = await validatePassword(password, user.password);
@@ -109,7 +108,12 @@ exports.login = async (req, res, next) => {
 
     await Customer.findByIdAndUpdate(user._id, { accessToken })
 
+    // console.log(user)
+
     res.send(accessToken);
+
+
+    //res.render("login")
 
 
 
@@ -186,35 +190,35 @@ exports.deleteUser = async (req, res, next) => {
     next(error)
   }
 }
-exports.grantAccess = function(action, resource) {
-  return async (req, res, next) => {
-    try {
-      const permission = roles.can(req.user.role)[action](resource);
-      if (!permission.granted) {
-        return res.status(401).json({
-          error: "You don't have enough permission to perform this action"
-        });
-      }
-      next()
-    } catch (error) {
-      next(error)
-    }
-  }
-}//
-
-exports.allowIfLoggedin = async (req, res, next) => {
-  try {
-    const user = res.locals.loggedInUser;
-    if (!user)
-    return res.status(401).json({
-      error: "You need to be logged in to access this route"
-    });
-    req.user = user;
-    next();
-  } catch (error) {
-    next(error);
-  }
-}
+// exports.grantAccess = function(action, resource) {
+//   return async (req, res, next) => {
+//     try {
+//       const permission = roles.can(req.user.role)[action](resource);
+//       if (!permission.granted) {
+//         return res.status(401).json({
+//           error: "You don't have enough permission to perform this action"
+//         });
+//       }
+//       next()
+//     } catch (error) {
+//       next(error)
+//     }
+//   }
+// }//
+//
+// exports.allowIfLoggedin = async (req, res, next) => {
+//   try {
+//     const user = res.locals.loggedInUser;
+//     if (!user)
+//     return res.status(401).json({
+//       error: "You need to be logged in to access this route"
+//     });
+//     req.user = user;
+//     next();
+//   } catch (error) {
+//     next(error);
+//   }
+// }
 
 // exports.logout = async (req, res, next) => {
 //   try {
