@@ -115,12 +115,15 @@ class BookingForm extends Form {
 
     if(bookingData._id === ""){
       console.log("biatch")
+
       const dataxxx = { ...bookingData };
       delete dataxxx._id;
       await saveRental(dataxxx);
     }
 
-    await saveRental(bookingData);
+    else{
+      await saveRental(bookingData);
+    }  
 
 
     this.props.history.push("/movies");
