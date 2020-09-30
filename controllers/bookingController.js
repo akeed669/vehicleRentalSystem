@@ -20,6 +20,7 @@ exports.makeBooking = async (req, res, next) => {
     if (error) return res.status(400).send(error.details[0].message);
 
     const {customer, vehicle} = req.body
+    console.log(customer)
     const lateReturn=JSON.parse(req.body.lateReturn)
     const needExtras=JSON.parse(req.body.needExtras)
     let rentCost=0
@@ -31,11 +32,9 @@ exports.makeBooking = async (req, res, next) => {
     //startDate.setHours(0,0,0,0)
     const endDate = new Date(req.body.endDate)
 
-    console.log(startDate)
-
     if(endDate > new Date(startDate.getTime()+(14 * 24 * 60 * 60 * 1000))) return res.status(400).send("only 14 days max");
 
-    const bcustomer = await Customer.findById({ _id: req.body.customer});
+    const bcustomer = await Customer.findById({ _id: customer});
 
     //checking whether the customer has been blacklisted
     if(bcustomer.blacklisted){
@@ -82,11 +81,28 @@ exports.makeBooking = async (req, res, next) => {
 
     if(needExtras){
 
-      const bookingExtras = req.body.bookingExtra
+      const bookingExtras = req.body.bookingExtra;
 
-      const newBooking = new Booking({ customer, vehicle, startDate, endDate, bookingExtras, lateReturn, rentCost, needExtras, insurance });
+      const bookingId = req.params.bookingId;
 
-      await newBooking.save();
+      const bookingObj={ customer, vehicle, startDate, endDate, bookingExtras, lateReturn, rentCost, needExtras, insurance };
+
+      if(bookingId !== ""){
+
+        await Booking.findByIdAndUpdate(bookingId, bookingObj);
+        const updatedBooking = await Booking.findById(bookingId)
+        res.status(200).json({
+          data: updatedBooking,
+          message: 'Booking has been updated'
+        });
+
+      }
+
+      else{
+        const newBooking = new Booking(bookingObj);
+        await newBooking.save();
+      }
+
 
       //changing the customer status after a booking
       await Customer.findByIdAndUpdate(bcustomer._id, {repeater:true});
@@ -192,9 +208,9 @@ exports.updateBooking = async (req, res, next) => {
 
 
     await Booking.findByIdAndUpdate(bookingId, update);
-    const updBooking = await Booking.findById(bookingId)
+    const updatedBooking = await Booking.findById(bookingId)
     res.status(200).json({
-      data: booking,
+      data: updatedBooking,
       message: 'Booking has been updated'
     });
   } catch (error) {
@@ -213,7 +229,7 @@ exports.getBooking = async (req, res, next) => {
   try {
     const bookingId = req.params.bookingId;
     const booking = await Booking.findById(bookingId);
-    if (!user) return next(new Error('Booking does not exist'));
+    //if (!user) return next(new Error('Booking does not exist'));
     res.status(200).json({
       data: booking
     });
