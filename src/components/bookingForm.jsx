@@ -1,5 +1,7 @@
 import React from "react";
 import Joi from "joi-browser";
+import Moment from 'moment';
+
 import Form from "./common/form";
 import { getVehicles, getVehicle, saveVehicle } from "../services/vehicleService";
 import { getExtras } from "../services/extrasService";
@@ -77,7 +79,7 @@ class BookingForm extends Form {
 
       if (bookingId === "new") return;
 
-      const { data: booking } = await getRental(bookingId);      
+      const { data: booking } = await getRental(bookingId);
 
       this.setState({ data: this.mapToViewModel(booking.data) });
       console.log(this.state.data)
@@ -126,7 +128,8 @@ class BookingForm extends Form {
 
       // _id: booking._id,
       vehicle:booking.vehicle,
-      startDate:booking.startDate,
+      startDate:Moment(booking.startDate).format('YYYY-MM-DD'),
+      endDate:Moment(booking.endDate).format('YYYY-MM-DD'),
       // title: booking.title,
       // genreId: booking.genre._id,
       // numberInStock: booking.numberInStock,

@@ -71,22 +71,6 @@ class Form extends Component {
     // console.log(this.state.data)
   };
 
-  // handleClick = ({ currentTarget: input }) => {
-  //   console.log("triggered")
-  //   const errors = { ...this.state.errors };
-  //   const error = this.validateProperty(input);
-  //   if (error) errors[input.name] = error;
-  //   else delete errors[input.name];
-  //
-  //   const data = { ...this.state.data };
-  //   if(data[input.name].checked==false){
-  //     data[input.name].checked = true;
-  //   }else{
-  //     data[input.name].checked = false;
-  //   }
-  //
-  //   this.setState({ data, errors });
-  // };
 
   renderButton(label) {
     return (
@@ -103,7 +87,7 @@ class Form extends Component {
 
   }
 
-  renderInput(name, label, type, bsClass, checkBoxValue) {
+  renderInput(name, label, type, bsClass) {
     if(type === undefined){type="text"}
     if(bsClass === undefined){bsClass="form-control"}
     const { data, errors } = this.state;
