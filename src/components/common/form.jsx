@@ -10,13 +10,13 @@ class Form extends Component {
   };
 
   validate = () => {
-    const options = { abortEarly: false };
-    const { error } = Joi.validate(this.state.data, this.schema, options);
-    if (!error) return null;
-
-    const errors = {};
-    for (let item of error.details) errors[item.path[0]] = item.message;
-    return errors;
+    // const options = { abortEarly: false };
+    // const { error } = Joi.validate(this.state.data, this.schema, options);
+    // if (!error) return null;
+    //
+    // const errors = {};
+    // for (let item of error.details) errors[item.path[0]] = item.message;
+    // return errors;
   };
 
   validateProperty = ({ name, value }) => {
@@ -43,9 +43,14 @@ class Form extends Component {
 
     // check if the check box is checked or unchecked
     if (e.target.checked) {
+
       // add the numerical value of the checkbox to bookingExtra array
-      // console.log(e.target)
-      bookingExtra.push(e.target.value)
+
+      if(!bookingExtra.includes(e.target.value)){
+        bookingExtra.push(e.target.value)
+      }
+
+
     } else {
       // or remove the value from the unchecked checkbox from the array
       index = bookingExtra.indexOf(e.target.value)
@@ -54,7 +59,7 @@ class Form extends Component {
 
     // update the state with the new array of bookingExtra
     this.setState({ bookingExtra: bookingExtra })
-    // console.log(this.state.data)
+    console.log(this.state.data)
   };
 
   handleChange = ({ currentTarget: input }) => {

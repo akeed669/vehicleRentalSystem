@@ -9,7 +9,7 @@ import { getRental, saveRental } from "../services/rentalService";
 
 class BookingForm extends Form {
   state = {
-    data: { vehicle: "", startDate:"",
+    data: { _id:"", vehicle: "", startDate:"",
     endDate:"", customer:"", lateReturn:false, needExtras:true, bookingExtra:[]},
     vehicles: [],
     extras: [],
@@ -18,7 +18,7 @@ class BookingForm extends Form {
   };
 
   schema = {
-    //_id: Joi.string(),
+    _id: Joi.string(),
     customer: Joi.string()
       .required()
       .label("Customer"),
@@ -48,11 +48,6 @@ class BookingForm extends Form {
     .label("Extras")
   };
 
-  // async populateGenres() {
-  //   const { data: genres } = await getGenres();
-  //   this.setState({ genres });
-  // }
-
   async populateVehicles() {
     const { data: vehiclesObject } = await getVehicles();
     const vehicles=vehiclesObject.data;
@@ -62,7 +57,6 @@ class BookingForm extends Form {
   getCustomerId() {
     //const { data: vehiclesObject } = await getVehicles();
     const {_id:customer}=this.props.user;
-    //console.log(customer)
     this.state.data.customer=customer;
     //this.setState({ data });
   }
@@ -83,6 +77,7 @@ class BookingForm extends Form {
 
       this.setState({ data: this.mapToViewModel(booking.data) });
       console.log(this.state.data)
+
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
         this.props.history.replace("/not-found");
@@ -98,49 +93,36 @@ class BookingForm extends Form {
           this.setState({loading: false});
       })
 
-    // try {
-    //   await this.populateExtras();
-    // } catch (e) {
-    //
-    // } finally {
-    //   this.setState({ extras:myExtras, loading:false });
-    //
-    // }
-
     this.getCustomerId();
 
-
-    // const { data:genresObject } = await getGenres();
-    // const genresArray=genresObject.data;
-
-    // const genres = [{ _id: "", vehicleTypeName: "All Vehicles" },...genresArray];
-
-    // const { data: vehiclesObject } = await getVehicles();
-    // const vehicles=vehiclesObject.data;
-    //
-    // this.setState({ vehicles, genres });
-    //
 
   }
 
   mapToViewModel(booking) {
     return {
-
-      // _id: booking._id,
-      vehicle:booking.vehicle,
+      _id: booking._id,
+      vehicle:booking.vehicle[0],
       startDate:Moment(booking.startDate).format('YYYY-MM-DD'),
       endDate:Moment(booking.endDate).format('YYYY-MM-DD'),
-      // title: booking.title,
-      // genreId: booking.genre._id,
-      // numberInStock: booking.numberInStock,
-      // dailyRentalRate: booking.dailyRentalRate
+      bookingExtra:booking.bookingExtras,
+      lateReturn:false,
+      needExtras:true
     };
   }
 
   doSubmit = async () => {
     const {data:bookingData}=this.state;
-    console.log(bookingData);
+
+    if(bookingData._id === ""){
+      console.log("biatch")
+      const dataxxx = { ...bookingData };
+      delete dataxxx._id;
+      await saveRental(dataxxx);
+    }
+
     await saveRental(bookingData);
+
+
     this.props.history.push("/movies");
   };
 
