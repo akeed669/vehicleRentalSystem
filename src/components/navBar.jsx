@@ -24,9 +24,9 @@ const NavBar = ({ user }) => {
           <NavLink className="nav-item nav-link" to="/movies">
             Vehicles
           </NavLink>
-          <NavLink className="nav-item nav-link" to="/customers">
+        {(user&&user.role==="admin")&& ( <NavLink className="nav-item nav-link" to="/customers">
             Customers
-          </NavLink>
+          </NavLink>)}
           <NavLink className="nav-item nav-link" to="/rentals">
             Rentals
           </NavLink>

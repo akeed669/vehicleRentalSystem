@@ -44,7 +44,7 @@ class Form extends Component {
     // check if the check box is checked or unchecked
     if (e.target.checked) {
       // add the numerical value of the checkbox to bookingExtra array
-      console.log(e.target)
+      // console.log(e.target)
       bookingExtra.push(e.target.value)
     } else {
       // or remove the value from the unchecked checkbox from the array
@@ -54,7 +54,7 @@ class Form extends Component {
 
     // update the state with the new array of bookingExtra
     this.setState({ bookingExtra: bookingExtra })
-    console.log(this.state.data)
+    // console.log(this.state.data)
   };
 
   handleChange = ({ currentTarget: input }) => {
@@ -68,7 +68,7 @@ class Form extends Component {
     data[input.name] = input.value;
     this.setState({ data, errors });
 
-    console.log(this.state.data)
+    // console.log(this.state.data)
   };
 
   // handleClick = ({ currentTarget: input }) => {

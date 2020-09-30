@@ -6,11 +6,11 @@ import Table from "./common/table";
 
 class RentalsTable extends Component {
   columns = [
-    // {
-    //   path: "vname",
-    //   label: "Rental",
-    //   content: rental => <Link to={`/rentals/${rental._id}`}>{rental.vname}</Link>
-    // },
+    {
+      path: "vehicle",
+      label: "Vehicle",
+      content: rental => <Link to={`/rentals/${rental._id}`}>{rental.vehicle}</Link>
+    },
     { path: "startDate", label: "From" },
     { path: "endDate", label: "Until" },
     { path: "lateReturn", label: "Returning Late" },

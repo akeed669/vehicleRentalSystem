@@ -5,7 +5,7 @@ import RentalsTable from "./rentalsTable";
 import ListGroup from "./common/listGroup";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
-import { getRentals, deleteRental } from "../services/rentalService";
+import { getRentals, getUserRentals, deleteRental } from "../services/rentalService";
 import { getGenres } from "../services/genreService";
 import { paginate } from "../utils/paginate";
 import _ from "lodash";
@@ -23,9 +23,20 @@ class Movies extends Component {
 
   async componentDidMount() {
 
-    const { data: rentalsObject } = await getRentals();
+    const {user} = this.props;
+    let rentals=""
 
-    const rentals=rentalsObject.data;
+    if(user.role === "basic"){
+
+      const { data: rentalsObject } = await getUserRentals(user._id);
+      rentals=rentalsObject.data;
+
+
+    } else {
+      const { data: rentalsObject } = await getRentals();
+      rentals=rentalsObject.data;
+    }
+
     this.setState({ rentals });
 
   }
@@ -79,7 +90,6 @@ class Movies extends Component {
       rentals: allMovies
     } = this.state;
 
-
     let filtered = allMovies;
 
     if (searchQuery)
@@ -105,14 +115,14 @@ class Movies extends Component {
       genres,
       selectedGenre,
       searchQuery,
-      sortColumn
+      sortColumn,
     } = this.state;
-    const { user } = this.props;
+
+    const { user } = this.props;    
 
     if (count === 0) return <p>There are no rentals in the database.</p>;
 
     const { totalCount, data: rentals } = this.getPagedData();
-    console.log(rentals)
 
     return (
       <div className="row">
@@ -125,7 +135,7 @@ class Movies extends Component {
           />
         </div>
         <div className="col">
-          {user && (
+          {user.role === "basic" && (
             <Link
               to="rentals/new"
               className="btn btn-primary"

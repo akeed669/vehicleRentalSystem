@@ -116,7 +116,7 @@ class Movies extends Component {
     if (count === 0) return <p>There are no vehicles in the database.</p>;
 
     const { totalCount, data: vehicles } = this.getPagedData();
-    console.log(vehicles)
+    // console.log(vehicles)
 
     return (
       <div className="row">
@@ -129,7 +129,7 @@ class Movies extends Component {
           />
         </div>
         <div className="col">
-          {user && (
+          {user.role === "basic" && (
             <Link
               to="rentals/new"
               className="btn btn-primary"

@@ -80,7 +80,9 @@ class Customers extends Component {
     return { totalCount: filtered.length, data: customers };
   }
 
+
   render() {
+
     const { length: count } = this.state.customers;
     const {
       pageSize,
@@ -88,12 +90,18 @@ class Customers extends Component {
       searchQuery,
       sortColumn
     } = this.state;
+
     const { user } = this.props;
+
+    // if(user !== undefined){console.log(user)}
+
+    //console.log(user)
+    if(user !== undefined && user.role !== "admin") return <p>You are not authorised to view this resource!</p>
 
     if (count === 0) return <p>There are no customers in the database.</p>;
 
     const { totalCount, data: customers } = this.getPagedData();
-    console.log(customers)
+    // console.log(customers)
 
     return (
       <div className="row">

@@ -23,12 +23,12 @@ class App extends Component {
 
   componentDidMount() {
     const user = auth.getCurrentUser();
-    //console.log(user)
     this.setState({ user });
   }
 
   render() {
-    const { user } = this.state;
+
+    const user = auth.getCurrentUser();    
 
     return (
       <React.Fragment>
@@ -41,7 +41,7 @@ class App extends Component {
             <Route path="/logout" component={Logout} />
             <ProtectedRoute path="/user/:id" component={BookingForm} />
             <ProtectedRoute path="/rentals/:id"
-            render={props => <BookingForm user={user} />} />
+            render={props => <BookingForm {...props} user={user} />} />
             <ProtectedRoute
               path="/movies"
               render={props => <Movies {...props} user={user} />}
@@ -50,7 +50,11 @@ class App extends Component {
             path="/customers"
             render={props => <Customers {...props} user={user} />}
             />
-            <ProtectedRoute path="/rentals" component={Rentals} />
+            <ProtectedRoute
+            path="/rentals"
+            render={props => <Rentals {...props} user={user} />}
+            />
+
             <Route path="/not-found" component={NotFound} />
             <Redirect from="/" exact to="/movies" />
             <Redirect to="/not-found" />
