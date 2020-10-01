@@ -15,16 +15,20 @@ const _ = require('lodash');
 
 exports.makeBooking = async (req, res, next) => {
   try {
-    console.log("choci")
+
     const { error } = validateBooking(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const {customer, vehicle} = req.body;
-    const lateReturn=JSON.parse(req.body.lateReturn);
-    const needExtras=JSON.parse(req.body.needExtras);
+    const {customer, vehicle, lateReturn:returnLate} = req.body;
+    const lateReturn = returnLate==="Yes"?true:false;
+
+    console.log(lateReturn);
+
     let rentCost=0;
     let bextra=null;
     let arrayExtras=req.body.bookingExtra;
+
+    const needExtras = arrayExtras.length>0 ? true : false;
 
     //get the dates
     const startDate = new Date(req.body.startDate)
@@ -148,12 +152,11 @@ function validateBooking(req) {
   const schema = Joi.object({
     customer:Joi.string().required(),
     vehicle:Joi.string().required(),
-    bookingExtra:Joi.array().min(1).items(Joi.string()),
+    bookingExtra:Joi.array().min(0).items(Joi.string()),
     startDate:Joi.date().greater('now'),
     //endDate:Joi.date().greater(Joi.ref('startDate')).max(Joi.ref('maxDate')).error(new Error("You can only rent a vehicle upto a maximum of 14 days")),
     endDate:Joi.date().greater(Joi.ref('startDate')),
-    lateReturn: Joi.boolean().required(),
-    needExtras:Joi.boolean().required(),
+    lateReturn: Joi.string().required(),
     //rentCost:Joi.number().required()
   });
   return schema.validate(req);
