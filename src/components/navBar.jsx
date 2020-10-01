@@ -24,9 +24,16 @@ const NavBar = ({ user }) => {
           <NavLink className="nav-item nav-link" to="/movies">
             Vehicles
           </NavLink>
-        {(user&&user.role==="admin")&& ( <NavLink className="nav-item nav-link" to="/customers">
+        {(user&&user.role==="admin")&& (
+          <React.Fragment>
+          <NavLink className="nav-item nav-link" to="/customers">
             Customers
-          </NavLink>)}
+          </NavLink>
+          <NavLink className="nav-item nav-link" to="/expedia">
+            Expedia Prices
+          </NavLink>
+          </React.Fragment>
+        )}          
           <NavLink className="nav-item nav-link" to="/rentals">
             Rentals
           </NavLink>

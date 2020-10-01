@@ -3,6 +3,7 @@ import { Route, Redirect, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import Customers from "./components/customers";
+import Expedia from "./components/expedia";
 import Movies from "./components/movies";
 import BookingForm from "./components/bookingForm";
 import CustomerForm from "./components/customerForm";
@@ -53,6 +54,11 @@ class App extends Component {
             render={props => <Customers {...props} user={user} />}
             />
             
+            <ProtectedRoute
+            path="/expedia"
+            render={props => <Expedia {...props} user={user} />}
+            />
+
             <ProtectedRoute
             path="/rentals"
             render={props => <Rentals {...props} user={user} />}
