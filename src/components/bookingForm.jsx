@@ -9,8 +9,8 @@ import { getRental, saveRental } from "../services/rentalService";
 
 class BookingForm extends Form {
   state = {
-    data: { _id:"", vehicle: "", startDate:"",
-    endDate:"", customer:"", lateReturn:"", bookingExtra:[]},
+    data: { _id:"", vehicle: "", startDate:"", vehicleReturned:"No",
+    endDate:"", customer:"", lateReturn:"", vehiclePicked:"No",  bookingExtra:[]},
     vehicles: [],
     extras: [],
     errors: {},
@@ -25,9 +25,6 @@ class BookingForm extends Form {
     vehicle: Joi.string()
       .required()
       .label("Vehicle"),
-    // extraId: Joi.string()
-    //   .required()
-    //   .label("Extra"),
     startDate:Joi.date()
     .required()
     .greater('now')
@@ -42,7 +39,11 @@ class BookingForm extends Form {
     bookingExtra:Joi.array()
     .min(0)
     .required()
-    .label("Extras")
+    .label("Extras"),
+    vehiclePicked:Joi.string()
+    .label("Vehicle Picked"),
+    vehicleReturned:Joi.string()
+    .label("Vehicle Returned")
   };
 
   async populateVehicles() {
@@ -82,7 +83,7 @@ class BookingForm extends Form {
   }
 
   async componentDidMount() {
-    //await this.populateGenres();
+
     await this.populateBooking();
     await this.populateVehicles();
 
@@ -95,13 +96,21 @@ class BookingForm extends Form {
   }
 
   mapToViewModel(booking) {
+
+    const parsedBooking = {...booking};
+    parsedBooking.lateReturn = booking.lateReturn === true?"Yes":"No";
+    parsedBooking.vehiclePicked = booking.vehiclePicked === true?"Yes":"No";
+    parsedBooking.vehicleReturned = booking.vehicleReturned === true?"Yes":"No";
+
     return {
-      _id: booking._id,
-      vehicle:booking.vehicle[0],
-      startDate:Moment(booking.startDate).format('YYYY-MM-DD'),
-      endDate:Moment(booking.endDate).format('YYYY-MM-DD'),
-      bookingExtra:booking.bookingExtras,
-      lateReturn:booking.lateReturn,
+      _id: parsedBooking._id,
+      vehicle:parsedBooking.vehicle[0],
+      startDate:Moment(parsedBooking.startDate).format('YYYY-MM-DD'),
+      endDate:Moment(parsedBooking.endDate).format('YYYY-MM-DD'),
+      bookingExtra:parsedBooking.bookingExtras,
+      lateReturn:parsedBooking.lateReturn,
+      vehiclePicked:parsedBooking.lateReturn,
+      vehicleReturned:parsedBooking.lateReturn
     };
   }
 
@@ -126,6 +135,8 @@ class BookingForm extends Form {
 
     const { loading } = this.state;
 
+    const {user} = this.props;
+
     if(loading) {
       return <h1>waiting</h1>
     }
@@ -138,9 +149,11 @@ class BookingForm extends Form {
           {this.renderInput("startDate", "Start Date","date")}
           {this.renderInput("endDate", "End Date","date")}
           {this.renderSelect("lateReturn", "Return Late", ["Yes", "No"])}
-          {this.renderCheckBox("bookingExtra", "Wine Chiller","checkbox","checkbox",this.state.extras[0]._id)}
-          {this.renderCheckBox("bookingExtra", "Baby seat","checkbox","checkbox",this.state.extras[1]._id)}
-          {this.renderCheckBox("bookingExtra", "SatNav","checkbox","checkbox",this.state.extras[2]._id)}
+          {user.role==="admin" && this.renderSelect("vehiclePicked", "Vehicle Collected", ["Yes", "No"])}
+          {user.role==="admin" && this.renderSelect("vehicleReturned", "Vehicle Returned", ["Yes", "No"])}
+          {user.role==="basic" && this.renderCheckBox("bookingExtra", "Wine Chiller","checkbox","checkbox",this.state.extras[0]._id)}
+          {user.role==="basic" && this.renderCheckBox("bookingExtra", "Baby seat","checkbox","checkbox",this.state.extras[1]._id)}
+          {user.role==="basic" && this.renderCheckBox("bookingExtra", "SatNav","checkbox","checkbox",this.state.extras[2]._id)}
           {this.renderButton("Save")}
         </form>
       </div>
