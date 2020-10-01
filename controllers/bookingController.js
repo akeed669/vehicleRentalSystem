@@ -109,15 +109,9 @@ exports.makeBooking = async (req, res, next) => {
           data: newBooking,
           message: 'Booking has been created'
         })
-
       }
-      //changing the customer status after a booking
-      await Customer.findByIdAndUpdate(bcustomer._id, {repeater:true});
 
-      await Vehicle.findByIdAndUpdate(bvehicle._id,{
-        carsAvailable:bvehicle.carsAvailable-1
-      });
-
+      //changing the extras availability after a booking
       arrayExtras.forEach(async(item,i) => {
 
         const xxx = await Extra.findById({ _id: item });
@@ -141,6 +135,17 @@ exports.makeBooking = async (req, res, next) => {
         data: newBooking
       })
     }
+
+    //changing the customer status after a booking
+    if(vehicleReturned){
+      await Customer.findByIdAndUpdate(bcustomer._id, {repeater:true});
+    }
+
+    //changing the vehicle availability after a booking
+    await Vehicle.findByIdAndUpdate(bvehicle._id,{
+      carsAvailable:bvehicle.carsAvailable-1
+    });
+
   } catch (error) {
     next(error)
   }

@@ -95,8 +95,11 @@ exports.updateUser = async (req, res, next) => {
   try {
     // const { error } = validateUserReg(req.body);
     // if (error) return res.status(400).send(error.details[0].message);
+    const {repeater:isRepeater, blacklisted:isBlacklisted, name} = req.body;
+    const repeater = isRepeater==="Yes"?true:false;
+    const blacklisted = isBlacklisted==="Yes"?true:false;
 
-    const update = req.body
+    const update = {repeater, blacklisted, name};
     const userId = req.params.userId;
     await Customer.findByIdAndUpdate(userId, update);
     const user = await Customer.findById(userId)
