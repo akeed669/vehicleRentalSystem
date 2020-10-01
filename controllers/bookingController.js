@@ -19,10 +19,10 @@ exports.makeBooking = async (req, res, next) => {
     const { error } = validateBooking(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const {customer, vehicle, lateReturn:returnLate} = req.body;
+    const {customer, vehicle, lateReturn:returnLate, vehiclePicked:picked, vehicleReturned:returned} = req.body;
     const lateReturn = returnLate==="Yes"?true:false;
-
-    console.log(lateReturn);
+    const vehiclePicked = picked==="Yes"?true:false;
+    const vehicleReturned = returned==="Yes"?true:false;
 
     let rentCost=0;
     let bextra=null;
@@ -90,7 +90,7 @@ exports.makeBooking = async (req, res, next) => {
 
       const isNewBooking = bookingId === undefined ? true : false;
 
-      const bookingObj={ customer, vehicle, startDate, endDate, bookingExtras, lateReturn, rentCost, needExtras, insurance };
+      const bookingObj={ customer, vehicle, startDate, endDate, bookingExtras, lateReturn, rentCost, needExtras, insurance, vehiclePicked, vehicleReturned };
 
       if(!isNewBooking){
 
@@ -129,7 +129,7 @@ exports.makeBooking = async (req, res, next) => {
 
     }else{
 
-      const newBooking = new Booking({ customer, vehicle, startDate, endDate, lateReturn, rentCost, insurance, needExtras });
+      const newBooking = new Booking({ customer, vehicle, startDate, endDate, lateReturn, rentCost, insurance, needExtras, vehiclePicked, vehicleReturned });
 
       await newBooking.save();
 
@@ -156,6 +156,8 @@ function validateBooking(req) {
     //endDate:Joi.date().greater(Joi.ref('startDate')).max(Joi.ref('maxDate')).error(new Error("You can only rent a vehicle upto a maximum of 14 days")),
     endDate:Joi.date().greater(Joi.ref('startDate')),
     lateReturn: Joi.string().required(),
+    vehiclePicked: Joi.string().required(),
+    vehicleReturned: Joi.string().required(),
     //rentCost:Joi.number().required()
   });
   return schema.validate(req);

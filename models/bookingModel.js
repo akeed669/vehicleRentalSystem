@@ -45,6 +45,17 @@ const BookingSchema=new mongoose.Schema({
     default: false
   },
 
+  vehiclePicked:{
+    type: Boolean,
+    default: false
+  },
+
+  vehicleReturned:{
+    type: Boolean,
+    default: false
+  },
+
+
   insurance:{
     type: Boolean,
     required:true
