@@ -7,7 +7,7 @@ import { getCustomer,updateCustomer } from "../services/userService";
 
 class CustomerForm extends Form {
   state = {
-    data: { _id:"", name: "", dob:"", blacklisted:"", repeater:"No"},
+    data: { _id:"", name: "", dob:"", blacklisted:"", repeater:"No" , role:""},
     errors: {},
   };
 
@@ -24,7 +24,9 @@ class CustomerForm extends Form {
     .label("Name"),
     blacklisted:Joi.string()
     .required()
-    .label("Vehicle Returned")
+    .label("Vehicle Returned"),
+    role:Joi.string()
+    .label("Role")
   };
 
   // async populateVehicles() {
@@ -86,8 +88,8 @@ class CustomerForm extends Form {
       name:parsedCustomer.name,
       blacklisted:parsedCustomer.blacklisted,
       repeater:parsedCustomer.repeater,
-      dob:Moment(parsedCustomer.dob).format('YYYY-MM-DD')
-
+      dob:Moment(parsedCustomer.dob).format('YYYY-MM-DD'),
+      role:parsedCustomer.role
     };
   }
 
@@ -102,14 +104,17 @@ class CustomerForm extends Form {
 
   render() {
 
+    const disableInputs=this.props.user.role === "basic"?true:false;
+
     return (
       <div>
         <h1>Customer Form</h1>
         <form onSubmit={this.handleSubmit}>
-          {this.renderSelect("name", "Name", [this.state.data.name])}
-          {this.renderInput("dob", "Date of Birth","date")}
-          {this.renderSelect("blacklisted", "Blacklisted", ["Yes", "No"])}
-          {this.renderSelect("repeater", "Repeater", ["Yes", "No"])}
+          {this.renderSelect("name", "Name", [this.state.data.name], false, true)}
+          {disableInputs && this.renderInput("license", "Driving License","text")}
+          {this.renderInput("dob", "Date of Birth","date","form-control",true)}
+          {this.renderSelect("blacklisted", "Blacklisted", ["Yes", "No"], false, disableInputs)}
+          {this.renderSelect("repeater", "Repeater", ["Yes", "No"], false, disableInputs)}
           {this.renderButton("Save")}
         </form>
       </div>

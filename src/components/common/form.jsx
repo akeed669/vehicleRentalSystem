@@ -102,8 +102,7 @@ class Form extends Component {
     );
   }
 
-
-  renderInput(name, label, type, bsClass) {
+  renderInput(name, label, type, bsClass, disabled) {
     if(type === undefined){type="text"}
     if(bsClass === undefined){bsClass="form-control"}
     const { data, errors } = this.state;
@@ -114,6 +113,7 @@ class Form extends Component {
         value={data[name]}
         label={label}
         bsClass={bsClass}
+        disabled={disabled}
         onChange={this.handleChange}
         error={errors[name]}
       />
@@ -137,7 +137,7 @@ class Form extends Component {
     );
   }
 
-  renderSelect(name, label, options, multiple) {
+  renderSelect(name, label, options, multiple, disabled) {
     if(multiple === undefined){multiple=false}
     const { data, errors } = this.state;
 
@@ -148,6 +148,7 @@ class Form extends Component {
         value={data[name]}
         label={label}
         options={options}
+        disabled={disabled}
         onChange={this.handleChange}
         error={errors[name]}
       />

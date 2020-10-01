@@ -9,7 +9,7 @@ class CustomersTable extends Component {
     {
       path: "name",
       label: "Customer",
-      content: user => <Link to={`/user/${user._id}`}>{user.name}</Link>
+      content: user => <Link to={`/profile/${user._id}`}>{user.name}</Link>
     },
     { path: "dob", label: "Date of Birth" },
 

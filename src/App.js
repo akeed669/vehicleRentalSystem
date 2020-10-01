@@ -40,7 +40,8 @@ class App extends Component {
             <Route path="/register" component={RegisterForm} />
             <Route path="/login" component={LoginForm} />
             <Route path="/logout" component={Logout} />
-            <ProtectedRoute path="/user/:id" component={CustomerForm} />
+            <ProtectedRoute path="/profile/:id"
+            render={props => <CustomerForm {...props} user={user} />} />
             <ProtectedRoute path="/rentals/:id"
             render={props => <BookingForm {...props} user={user} />} />
             <ProtectedRoute
@@ -51,6 +52,7 @@ class App extends Component {
             path="/customers"
             render={props => <Customers {...props} user={user} />}
             />
+            
             <ProtectedRoute
             path="/rentals"
             render={props => <Rentals {...props} user={user} />}

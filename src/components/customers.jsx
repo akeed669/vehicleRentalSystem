@@ -72,7 +72,6 @@ class Customers extends Component {
         m.vname.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
 
-
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
     const customers = paginate(sorted, currentPage, pageSize);
@@ -93,15 +92,11 @@ class Customers extends Component {
 
     const { user } = this.props;
 
-    // if(user !== undefined){console.log(user)}
-
-    //console.log(user)
     if(user !== undefined && user.role !== "admin") return <p>You are not authorised to view this resource!</p>
 
     if (count === 0) return <p>There are no customers in the database.</p>;
 
     const { totalCount, data: customers } = this.getPagedData();
-    // console.log(customers)
 
     return (
       <div className="row">
