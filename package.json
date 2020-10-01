@@ -9,8 +9,10 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+
   "dependencies": {
     "accesscontrol": "^2.2.1",
+    "axios": "^0.20.0",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "client-sessions": "^0.8.0",
@@ -25,6 +27,7 @@
     "mongoose": "^5.10.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
-    "passport-local-mongoose": "^6.0.1"
+    "passport-local-mongoose": "^6.0.1",
+    "react-toastify": "^6.0.8"
   }
 }

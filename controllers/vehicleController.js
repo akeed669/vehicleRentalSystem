@@ -50,6 +50,10 @@ exports.addVehicleType = async (req, res, next) => {
 }
 
 exports.getVehicles = async (req, res, next) => {
+
+
+
+
   const vehicles = await Vehicle.find({});
   res.status(200).json({
     data: vehicles

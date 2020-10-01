@@ -6,6 +6,7 @@ const Vehicle= require('../models/vehicleModel');
 const Booking= require('../models/bookingModel');
 const vehicleController = require('../controllers/vehicleController');
 const extrasController = require('../controllers/extrasController');
+const {getTaxIds} = require('../services/insuranceService');
 const Extra= require('../models/extrasModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -24,6 +25,20 @@ exports.makeBooking = async (req, res, next) => {
     const vehiclePicked = picked==="Yes"?true:false;
     const vehicleReturned = returned==="Yes"?true:false;
 
+    //check if blacklisted by insurance company
+    if(vehiclePicked){
+
+      console.log(customer)
+      const {councilTaxId} = await Customer.findById(customer);
+      console.log(councilTaxId)
+
+      const {data:taxIdsArray} = await getTaxIds();
+      const checkLicense = obj => obj.councilTaxId === councilTaxId;
+      if(taxIdsArray.some(checkLicense)){
+        return res.status(400).send("This customer has been reported by the insurance company for fraud!")
+      }
+    }
+
     let rentCost=0;
     let bextra=null;
     let arrayExtras=req.body.bookingExtra;
@@ -41,7 +56,7 @@ exports.makeBooking = async (req, res, next) => {
 
     //checking whether the customer has been blacklisted
     if(bcustomer.blacklisted){
-      return res.status(400).send('You have been blacklisted!')
+      return res.status(400).send('You have been blacklisted due to non completion of a previous booking!')
     }
 
     //checking whether the desired vehicle is available
@@ -51,7 +66,7 @@ exports.makeBooking = async (req, res, next) => {
     //checking whether customer can be provided the late return option
     if(lateReturn){
       if (!bcustomer.repeater){
-        return res.status(400).send('Late returns are only possible for first time customers')
+        return res.status(400).send('Late returns are not allowed for first time customers')
       }
     }
 

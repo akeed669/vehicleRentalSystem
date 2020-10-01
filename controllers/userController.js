@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const Customer = require('../models/userModel');
 const { roles } = require('../roles')
+const {getLicenses} = require('../services/licenseService');
 const mongoose=require("mongoose")
 
 const jwt = require('jsonwebtoken');
@@ -19,6 +20,7 @@ async function validatePassword(plainPassword, hashedPassword) {
 
 exports.signup = async (req, res, next) => {
   try {
+
     const { error } = validateUserReg(req.body);
 
     if (error) return res.status(400).send(error.details[0].message);
@@ -26,10 +28,18 @@ exports.signup = async (req, res, next) => {
     const user = await Customer.findOne({ username: req.body.username });
     if (user) return res.status(400).send('User already registered.');
 
-    const {name, username, password, blacklisted, repeater,role} = req.body
+    const {name, username, password, blacklisted, repeater,role, license, councilTaxId} = req.body
+
+    //check if license is blacklisted
+    const {data:licensesArray} = await getLicenses();
+    const checkLicense = obj => obj.licensenumber === license;
+    if(licensesArray.some(checkLicense)){
+      return res.status(400).send("Your license has been blacklisted by the DMV!")
+    }
+
     const dob = new Date(req.body.dob)
     const hashedPassword = await hashPassword(password);
-    const newUser = new Customer({ name, username, password: hashedPassword, blacklisted, repeater, role:role||"basic", dob });
+    const newUser = new Customer({ name, username, password: hashedPassword, blacklisted, repeater, role:role||"basic", dob, license, councilTaxId });
 
     const accessToken = newUser.generateAuthToken();
 
@@ -173,23 +183,15 @@ exports.deleteUser = async (req, res, next) => {
 //   }
 // }
 
-
-exports.showHome=async (req, res, next) => {
-  try {
-    res.render("home")
-  } catch (error) {
-    next(error);
-  }
-}
-
-
 function validateUserReg(req) {
   const schema = Joi.object({
     name: Joi.string().min(5).max(50).required(),
     username: Joi.string().min(5).max(255).required().email(),
     password: Joi.string().min(5).max(255).required(),
     role: Joi.string().min(5).max(5),
-    dob:Joi.date().less(new Date().toLocaleDateString())
+    dob:Joi.date().less(new Date().toLocaleDateString()),
+    license:Joi.string().min(6).max(6).required(),
+    councilTaxId:Joi.string().min(6).max(6).required(),
   });
 
   return schema.validate(req);

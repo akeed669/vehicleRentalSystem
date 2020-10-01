@@ -20,7 +20,7 @@ module.exports = async (req, res, next) => {
     }
 
     res.locals.loggedInUser = await Customer.findById(userId);
-    console.log(res.locals.loggedInUser)
+    //console.log(res.locals.loggedInUser)
 
     //req.user = decoded;
     next();

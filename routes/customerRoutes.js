@@ -44,7 +44,4 @@ router.delete('/user/:userId', userController.deleteUser);
 
 //router.post('/booking', userController.makeBooking);
 
-router.get("/", userController.showHome)
-
-
 module.exports = router;

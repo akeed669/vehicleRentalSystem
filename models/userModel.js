@@ -45,6 +45,21 @@ const CustomerSchema = new Schema({
     default: 'basic',
     enum: ["basic", "admin"]
   },
+
+  license:{
+    type: String,
+    required: true,
+    minlength:6,
+    maxlength:6
+  },
+
+  councilTaxId:{
+    type: String,
+    required: true,
+    minlength:6,
+    maxlength:6
+  },
+
   accessToken: {
     type: String
   }
