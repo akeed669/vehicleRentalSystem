@@ -5,14 +5,13 @@ import Table from "./common/table";
 
 class CustomersTable extends Component {
   columns = [
-    // {
-    //   path: "name",
-    //   label: "Customer",
-    //   content: customer => <Link to={`/user/${user._id}`}>{customer.name}</Link>
-    // },
+
+    {
+      path: "name",
+      label: "Customer",
+      content: user => <Link to={`/user/${user._id}`}>{user.name}</Link>
+    },
     { path: "dob", label: "Date of Birth" },
-    { path: "blacklisted", label: "Blacklisted" },
-    { path: "repeater", label: "Repeat Customer" },
 
   ];
 

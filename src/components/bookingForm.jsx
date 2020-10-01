@@ -109,8 +109,8 @@ class BookingForm extends Form {
       endDate:Moment(parsedBooking.endDate).format('YYYY-MM-DD'),
       bookingExtra:parsedBooking.bookingExtras,
       lateReturn:parsedBooking.lateReturn,
-      vehiclePicked:parsedBooking.lateReturn,
-      vehicleReturned:parsedBooking.lateReturn
+      vehiclePicked:parsedBooking.vehiclePicked,
+      vehicleReturned:parsedBooking.vehicleReturned
     };
   }
 

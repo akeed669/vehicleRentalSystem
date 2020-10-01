@@ -56,13 +56,6 @@ class Movies extends Component {
     }
   };
 
-  handleLike = movie => {
-    const rentals = [...this.state.rentals];
-    const index = rentals.indexOf(movie);
-    rentals[index] = { ...rentals[index] };
-    rentals[index].liked = !rentals[index].liked;
-    this.setState({ rentals });
-  };
 
   handlePageChange = page => {
     this.setState({ currentPage: page });
@@ -118,7 +111,7 @@ class Movies extends Component {
       sortColumn,
     } = this.state;
 
-    const { user } = this.props;    
+    const { user } = this.props;
 
     if (count === 0) return <p>There are no rentals in the database.</p>;
 

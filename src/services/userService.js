@@ -19,6 +19,15 @@ export function register(user) {
   });
 }
 
+export function updateCustomer(user) {
+
+  if (user._id) {
+    const body = { ...user };
+    delete body._id;
+    return http.put(customerUrl(user._id), body);
+  }
+}
+
 export function getCustomers() {
   return http.get(apiEndpoint2);
 }

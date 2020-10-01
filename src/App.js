@@ -5,6 +5,7 @@ import { ToastContainer } from "react-toastify";
 import Customers from "./components/customers";
 import Movies from "./components/movies";
 import BookingForm from "./components/bookingForm";
+import CustomerForm from "./components/customerForm";
 import Rentals from "./components/rentals";
 import NotFound from "./components/notFound";
 import NavBar from "./components/navBar";
@@ -28,7 +29,7 @@ class App extends Component {
 
   render() {
 
-    const user = auth.getCurrentUser();    
+    const user = auth.getCurrentUser();
 
     return (
       <React.Fragment>
@@ -39,7 +40,7 @@ class App extends Component {
             <Route path="/register" component={RegisterForm} />
             <Route path="/login" component={LoginForm} />
             <Route path="/logout" component={Logout} />
-            <ProtectedRoute path="/user/:id" component={BookingForm} />
+            <ProtectedRoute path="/user/:id" component={CustomerForm} />
             <ProtectedRoute path="/rentals/:id"
             render={props => <BookingForm {...props} user={user} />} />
             <ProtectedRoute

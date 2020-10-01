@@ -7,14 +7,14 @@ import Table from "./common/table";
 class RentalsTable extends Component {
   columns = [
     {
-      path: "vehicle",
-      label: "Vehicle",
-      content: rental => <Link to={`/rentals/${rental._id}`}>{rental.vehicle}</Link>
+      path: "_id",
+      label: "Rental",
+      content: rental => <Link to={`/rentals/${rental._id}`}>{rental._id}</Link>
     },
+    { path: "customer", label: "Customer" },
+    { path: "vehicle", label: "Vehicle" },
     { path: "startDate", label: "From" },
     { path: "endDate", label: "Until" },
-    { path: "lateReturn", label: "Returning Late" },
-    { path: "insurance", label: "Insurance covered" },
     { path: "rentCost", label: "Rental Charges" },
 
   ];
