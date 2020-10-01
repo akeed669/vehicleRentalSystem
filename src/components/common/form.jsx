@@ -38,28 +38,46 @@ class Form extends Component {
 
   handleChangeCheckBox=(e) => {
     // current array of options
-    const bookingExtra = this.state.data.bookingExtra
-    let index
+    const bookingExtra = this.state.data.bookingExtra;
+    let lateReturnBox = this.state.data.lateReturn;
+    let index;
 
     // check if the check box is checked or unchecked
     if (e.target.checked) {
 
+      if(e.target.value == "late"){
+        lateReturnBox=true;
+      }
+
       // add the numerical value of the checkbox to bookingExtra array
 
-      if(!bookingExtra.includes(e.target.value)){
+      else if(!bookingExtra.includes(e.target.value)){
         bookingExtra.push(e.target.value)
       }
 
 
     } else {
+
+      if(e.target.value == "late"){
+        lateReturnBox=false;
+      }
+
       // or remove the value from the unchecked checkbox from the array
-      index = bookingExtra.indexOf(e.target.value)
-      bookingExtra.splice(index, 1)
+      else{
+        index = bookingExtra.indexOf(e.target.value)
+        bookingExtra.splice(index, 1)
+      }
     }
 
     // update the state with the new array of bookingExtra
-    this.setState({ bookingExtra: bookingExtra })
+    this.setState({ bookingExtra: bookingExtra });
+
+    this.setState(() => ({
+      lateReturn:lateReturnBox
+    }));
+
     console.log(this.state.data)
+    console.log(lateReturnBox)
   };
 
   handleChange = ({ currentTarget: input }) => {
@@ -73,7 +91,6 @@ class Form extends Component {
     data[input.name] = input.value;
     this.setState({ data, errors });
 
-    // console.log(this.state.data)
   };
 
 
@@ -85,12 +102,6 @@ class Form extends Component {
     );
   }
 
-  dynamicBoxes(){
-
-    this.renderCheckBox("bookingExtra", "Wine Chiller","checkbox","checkbox","wine");
-    return;
-
-  }
 
   renderInput(name, label, type, bsClass) {
     if(type === undefined){type="text"}

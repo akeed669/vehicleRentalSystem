@@ -10,7 +10,7 @@ import { getRental, saveRental } from "../services/rentalService";
 class BookingForm extends Form {
   state = {
     data: { _id:"", vehicle: "", startDate:"",
-    endDate:"", customer:"", lateReturn:false, needExtras:true, bookingExtra:[]},
+    endDate:"", customer:"", lateReturn:"", bookingExtra:[]},
     vehicles: [],
     extras: [],
     errors: {},
@@ -36,12 +36,9 @@ class BookingForm extends Form {
     .required()
     //.greater(Joi.ref('startDate'))
     .label("Start Date"),
-    needExtras:Joi.boolean()
+    lateReturn:Joi.string()
     .required()
-    .label("Extras Required"),
-    lateReturn:Joi.boolean()
-    .required()
-    .label("Late Return Required"),
+    .label("Late Return"),
     bookingExtra:Joi.array()
     .min(0)
     .required()
@@ -95,7 +92,6 @@ class BookingForm extends Form {
 
     this.getCustomerId();
 
-
   }
 
   mapToViewModel(booking) {
@@ -105,8 +101,7 @@ class BookingForm extends Form {
       startDate:Moment(booking.startDate).format('YYYY-MM-DD'),
       endDate:Moment(booking.endDate).format('YYYY-MM-DD'),
       bookingExtra:booking.bookingExtras,
-      lateReturn:false,
-      needExtras:true
+      lateReturn:booking.lateReturn,
     };
   }
 
@@ -114,7 +109,6 @@ class BookingForm extends Form {
     const {data:bookingData}=this.state;
 
     if(bookingData._id === ""){
-      console.log("biatch")
 
       const dataxxx = { ...bookingData };
       delete dataxxx._id;
@@ -123,8 +117,7 @@ class BookingForm extends Form {
 
     else{
       await saveRental(bookingData);
-    }  
-
+    }
 
     this.props.history.push("/movies");
   };
@@ -144,8 +137,10 @@ class BookingForm extends Form {
           {this.renderSelect("vehicle", "Vehicle", this.state.vehicles)}
           {this.renderInput("startDate", "Start Date","date")}
           {this.renderInput("endDate", "End Date","date")}
+          {this.renderSelect("lateReturn", "Return Late", ["Yes", "No"])}
           {this.renderCheckBox("bookingExtra", "Wine Chiller","checkbox","checkbox",this.state.extras[0]._id)}
           {this.renderCheckBox("bookingExtra", "Baby seat","checkbox","checkbox",this.state.extras[1]._id)}
+          {this.renderCheckBox("bookingExtra", "SatNav","checkbox","checkbox",this.state.extras[2]._id)}
           {this.renderButton("Save")}
         </form>
       </div>
