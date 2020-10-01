@@ -6,7 +6,7 @@ import auth from "../services/authService";
 
 class RegisterForm extends Form {
   state = {
-    data: { name:"", username: "", password: "", dob:"" },
+    data: { name:"", username: "", password: "", dob:"" , license:"" ,councilTaxId:"", picture:"" },
     errors: {}
   };
 
@@ -17,17 +17,18 @@ class RegisterForm extends Form {
     password: Joi.string().min(5).max(255).required().label("Password"),
     //role: Joi.string().min(5).max(5).label("Role"),
     dob:Joi.date().less(new Date().toLocaleDateString()).label("Date of Birth"),
+    license:Joi.string().min(6).max(6).required().label("Driving License"),
+    councilTaxId:Joi.string().min(6).max(6).required().label("Council Tax Number"),
+    picture:Joi.any().label("Customer Image")
 
   };
 
   doSubmit = async () => {
     try {
-      console.log(this.state.data)
       const response = await userService.register(this.state.data);
-      console.log(response)
       auth.loginWithJwt(response.headers["x-auth-token"]);
-
       window.location = "/";
+
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         const errors = { ...this.state.errors };
@@ -44,6 +45,9 @@ class RegisterForm extends Form {
       <form onSubmit={this.handleSubmit}>
       {this.renderInput("name", "Name")}
       {this.renderInput("username", "Username")}
+      {this.renderInput("license", "Driving License")}
+      {this.renderInput("councilTaxId", "Council Tax Number")}
+      {this.renderInput("picture", "Picture", "file")}
       {this.renderInput("password", "Password", "password")}
       {this.renderInput("dob", "Date of Birth","date")}
       {this.renderButton("Register")}

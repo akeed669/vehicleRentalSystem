@@ -72,12 +72,20 @@ class Form extends Component {
     // update the state with the new array of bookingExtra
     this.setState({ bookingExtra: bookingExtra });
 
-    this.setState(() => ({
-      lateReturn:lateReturnBox
-    }));
+    // this.setState(() => ({
+    //   lateReturn:lateReturnBox
+    // }));
 
+  };
+
+
+  handleFile=(e) => {
+
+     const pictureFile = e.target.files[0];
+    // update the state with the selected image
+    this.setState({ picture: pictureFile });
     console.log(this.state.data)
-    console.log(lateReturnBox)
+
   };
 
   handleChange = ({ currentTarget: input }) => {
@@ -88,9 +96,15 @@ class Form extends Component {
     else delete errors[input.name];
 
     const data = { ...this.state.data };
-    data[input.name] = input.value;
-    this.setState({ data, errors });
 
+    if(input.name==="picture"){
+      console.log(input)
+      //data[input.name] = input.target.files[0];
+    }
+    data[input.name] = input.value;
+
+    this.setState({ data, errors });
+    
   };
 
 

@@ -7,7 +7,7 @@ import { getCustomer,updateCustomer } from "../services/userService";
 
 class CustomerForm extends Form {
   state = {
-    data: { _id:"", name: "", dob:"", blacklisted:"", repeater:"No" , role:""},
+    data: { _id:"", name: "", dob:"", blacklisted:"", repeater:"No" , role:"" , license:""},
     errors: {},
   };
 
@@ -26,27 +26,11 @@ class CustomerForm extends Form {
     .required()
     .label("Vehicle Returned"),
     role:Joi.string()
-    .label("Role")
+    .label("Role"),
+    license:Joi.string()
+    .label("License")
   };
 
-  // async populateVehicles() {
-  //   const { data: vehiclesObject } = await getVehicles();
-  //   const vehicles=vehiclesObject.data;
-  //   this.setState({ vehicles });
-  // }
-
-  // getCustomerId() {
-  //   //const { data: vehiclesObject } = await getVehicles();
-  //   const {_id:customer}=this.props.user;
-  //   this.state.data.customer=customer;
-  //   //this.setState({ data });
-  // }
-
-  // async populateExtras() {
-  //   const { data: extrasObject } = await getExtras();
-  //   const myExtras=extrasObject.data;
-  //   this.setState({extras:myExtras});
-  // }
 
   async populateCustomer() {
     try {
@@ -66,15 +50,7 @@ class CustomerForm extends Form {
   }
 
   async componentDidMount() {
-
     await this.populateCustomer();
-    // await this.populateVehicles();
-    //
-    // await this.populateExtras().then(() => {
-    //       this.setState({loading: false});
-    //   })
-
-    // this.getCustomerId();
   }
 
   mapToViewModel(customer) {
@@ -89,7 +65,8 @@ class CustomerForm extends Form {
       blacklisted:parsedCustomer.blacklisted,
       repeater:parsedCustomer.repeater,
       dob:Moment(parsedCustomer.dob).format('YYYY-MM-DD'),
-      role:parsedCustomer.role
+      role:parsedCustomer.role,
+      license:parsedCustomer.license,
     };
   }
 
@@ -111,7 +88,7 @@ class CustomerForm extends Form {
         <h1>Customer Form</h1>
         <form onSubmit={this.handleSubmit}>
           {this.renderSelect("name", "Name", [this.state.data.name], false, true)}
-          {disableInputs && this.renderInput("license", "Driving License","text")}
+          {disableInputs && this.renderInput("license", "Driving License","text","form-control",true)}
           {this.renderInput("dob", "Date of Birth","date","form-control",true)}
           {this.renderSelect("blacklisted", "Blacklisted", ["Yes", "No"], false, disableInputs)}
           {this.renderSelect("repeater", "Repeater", ["Yes", "No"], false, disableInputs)}

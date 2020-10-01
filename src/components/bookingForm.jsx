@@ -14,7 +14,9 @@ class BookingForm extends Form {
     vehicles: [],
     extras: [],
     errors: {},
+    disableVehicleChoice:false,
     loading:true,
+    newBooking:false,
   };
 
   schema = {
@@ -52,12 +54,13 @@ class BookingForm extends Form {
     this.setState({ vehicles });
   }
 
-  getCustomerId() {
-    //const { data: vehiclesObject } = await getVehicles();
-    const {_id:customer}=this.props.user;
-    this.state.data.customer=customer;
-    //this.setState({ data });
-  }
+  // getCustomerId() {
+  //   //const { data: vehiclesObject } = await getVehicles();
+  //   const {_id:setCustomer}=this.props.user;
+  //   this.state.customer = setCustomer;
+  //   // this.setState({ customer:setCustomer });
+  //   console.log(this.state.customer)
+  // }
 
   async populateExtras() {
     const { data: extrasObject } = await getExtras();
@@ -69,11 +72,18 @@ class BookingForm extends Form {
     try {
       const bookingId = this.props.match.params.id;
 
-      if (bookingId === "new") return;
+      if (bookingId === "new") {
+        this.state.newBooking = true;
+        return
+      };
+
+      this.setState({disableVehicleChoice:true})
 
       const { data: booking } = await getRental(bookingId);
+      console.log(booking)
 
       this.setState({ data: this.mapToViewModel(booking.data) });
+      // this.setState({ data: booking.data });
       console.log(this.state.data)
 
     } catch (ex) {
@@ -91,19 +101,19 @@ class BookingForm extends Form {
           this.setState({loading: false});
       })
 
-    this.getCustomerId();
-
   }
 
   mapToViewModel(booking) {
-
+    console.log(booking)
     const parsedBooking = {...booking};
-    parsedBooking.lateReturn = booking.lateReturn === true?"Yes":"No";
-    parsedBooking.vehiclePicked = booking.vehiclePicked === true?"Yes":"No";
-    parsedBooking.vehicleReturned = booking.vehicleReturned === true?"Yes":"No";
-
+    console.log(parsedBooking)
+    parsedBooking.lateReturn = parsedBooking.lateReturn === true?"Yes":"No";
+    parsedBooking.vehiclePicked = parsedBooking.vehiclePicked === true?"Yes":"No";
+    parsedBooking.vehicleReturned = parsedBooking.vehicleReturned === true?"Yes":"No";
+    console.log(parsedBooking)
     return {
       _id: parsedBooking._id,
+      customer:parsedBooking.customer,
       vehicle:parsedBooking.vehicle[0],
       startDate:Moment(parsedBooking.startDate).format('YYYY-MM-DD'),
       endDate:Moment(parsedBooking.endDate).format('YYYY-MM-DD'),
@@ -115,10 +125,18 @@ class BookingForm extends Form {
   }
 
   doSubmit = async () => {
+
+    console.log(this.state.data)
+
     const {data:bookingData}=this.state;
 
-    if(bookingData._id === ""){
+    if(this.state.newBooking){
+      bookingData.customer = this.props.user._id;
+    }
 
+    console.log(bookingData);
+
+    if(bookingData._id === ""){
       const dataxxx = { ...bookingData };
       delete dataxxx._id;
       await saveRental(dataxxx);
@@ -137,6 +155,8 @@ class BookingForm extends Form {
 
     const {user} = this.props;
 
+    const disableInputs = user.role === "admin"?true:false;
+
     if(loading) {
       return <h1>waiting</h1>
     }
@@ -145,15 +165,15 @@ class BookingForm extends Form {
       <div>
         <h1>Booking Form</h1>
         <form onSubmit={this.handleSubmit}>
-          {this.renderSelect("vehicle", "Vehicle", this.state.vehicles)}
-          {this.renderInput("startDate", "Start Date","date")}
-          {this.renderInput("endDate", "End Date","date")}
-          {this.renderSelect("lateReturn", "Return Late", ["Yes", "No"])}
-          {user.role==="admin" && this.renderSelect("vehiclePicked", "Vehicle Collected", ["Yes", "No"])}
-          {user.role==="admin" && this.renderSelect("vehicleReturned", "Vehicle Returned", ["Yes", "No"])}
-          {user.role==="basic" && this.renderCheckBox("bookingExtra", "Wine Chiller","checkbox","checkbox",this.state.extras[0]._id)}
-          {user.role==="basic" && this.renderCheckBox("bookingExtra", "Baby seat","checkbox","checkbox",this.state.extras[1]._id)}
-          {user.role==="basic" && this.renderCheckBox("bookingExtra", "SatNav","checkbox","checkbox",this.state.extras[2]._id)}
+          {this.renderSelect("vehicle", "Vehicle", this.state.vehicles,false,this.state.disableVehicleChoice)}
+          {this.renderInput("startDate", "Start Date","date","form-control",disableInputs)}
+          {this.renderInput("endDate", "End Date","date","form-control",disableInputs)}
+          {this.renderSelect("lateReturn", "Return Late", ["Yes", "No"],false,disableInputs)}
+          {disableInputs && this.renderSelect("vehiclePicked", "Vehicle Collected", ["Yes", "No"])}
+          {disableInputs && this.renderSelect("vehicleReturned", "Vehicle Returned", ["Yes", "No"])}
+          {!disableInputs && this.renderCheckBox("bookingExtra", "Wine Chiller","checkbox","checkbox",this.state.extras[0]._id)}
+          {!disableInputs && this.renderCheckBox("bookingExtra", "Baby seat","checkbox","checkbox",this.state.extras[1]._id)}
+          {!disableInputs && this.renderCheckBox("bookingExtra", "SatNav","checkbox","checkbox",this.state.extras[2]._id)}
           {this.renderButton("Save")}
         </form>
       </div>

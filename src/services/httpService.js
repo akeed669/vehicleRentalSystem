@@ -20,11 +20,6 @@ axios.interceptors.response.use(null, error => {
   return Promise.reject(error);
 });
 
-// axios.interceptors.response.use(function(response) {
-//
-//   toast.success("Success");
-//
-// });
 
 function setJwt(jwt) {
   axios.defaults.headers.common["x-auth-token"] = jwt;

@@ -14,6 +14,8 @@ export function register(user) {
     username: user.username,
     password: user.password,
     name: user.name,
+    license: user.license,
+    councilTaxId: user.councilTaxId,
     //role:user.role,
     dob:user.dob
   });

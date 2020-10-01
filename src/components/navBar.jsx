@@ -6,7 +6,7 @@ const NavBar = ({ user }) => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <Link className="navbar-brand" to="/">
-        Vidly
+        Rent-A-Ride
       </Link>
       <button
         className="navbar-toggler"
