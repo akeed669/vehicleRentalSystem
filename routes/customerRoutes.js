@@ -26,6 +26,8 @@ router.get('/user/:userId', userController.getUser);
 
 router.get('/users', userController.getUsers);
 
+router.get('/expedia', userController.getPrices);
+
 //router.put('/user/:userId', userController.allowIfLoggedin, userController.grantAccess('updateAny', 'profile'), userController.updateUser);
 router.put('/user/:userId', userController.updateUser);
 

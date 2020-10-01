@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const Customer = require('../models/userModel');
 const { roles } = require('../roles')
+const {getPrices} = require('../services/webScrapeService');
 const {getLicenses} = require('../services/licenseService');
 const mongoose=require("mongoose")
 
@@ -81,6 +82,7 @@ exports.login = async (req, res, next) => {
 }
 
 exports.getUsers = async (req, res, next) => {
+
   const users = await Customer.find({});
   res.status(200).json({
     data: users
@@ -95,6 +97,17 @@ exports.getUser = async (req, res, next) => {
     if (!user) return next(new Error('User does not exist'));
     res.status(200).json({
       data: user
+    });
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.getPrices = async (req, res, next) => {
+  try {
+    const {data:pricesArray} = await getPrices();
+    res.status(200).json({
+      data: pricesArray
     });
   } catch (error) {
     next(error)

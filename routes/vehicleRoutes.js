@@ -7,7 +7,7 @@ router.post('/newVehicle', vehicleController.addVehicle);
 
 router.get('/vehicle/:vehicleId', vehicleController.getVehicle);
 
-router.get('/vehicles', auth, vehicleController.getVehicles);
+router.get('/vehicles', vehicleController.getVehicles);
 
 router.get('/vehicleTypes', vehicleController.getVehicleTypes);
 
