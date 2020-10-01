@@ -33,7 +33,7 @@ const getData = async () => {
   const prices = $('.price-and-freshness').text().split('total');
 
   const _prices = prices.map((str) => str.replace(/\s/g, ''));
-  let _price = _prices.map((str) => str.replace('found3daysago', ''));
+  let _price = _prices.map((str) => str.replace(/[^\d.-]/g, ''));
 
   let data = _.zipWith(_carmodel, _price, (_carmodel, _price) => ({
     _carmodel,
