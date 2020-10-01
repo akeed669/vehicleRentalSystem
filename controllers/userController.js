@@ -1,15 +1,11 @@
-const Joi = require('joi');//
-//const {Customer, validateReg, validateLogin} = require('../models/userModel');
+const Joi = require('joi');
 const Customer = require('../models/userModel');
 const { roles } = require('../roles')
 const mongoose=require("mongoose")
-// const Vehicle= require('../models/vehicleModel');
-// const Rental= require('../models/rentalModel');
-// const Extra= require('../models/extrasModel');
+
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
-
 
 require("dotenv").config();
 
@@ -20,22 +16,6 @@ async function hashPassword(password) {
 async function validatePassword(plainPassword, hashedPassword) {
   return await bcrypt.compare(plainPassword, hashedPassword);
 }
-
-//creating an admin
-// exports.makeadmin = async (req, res, next) =>{
-//   try{
-//     const hashedPassword = await hashPassword(process.env.ADMIN_PASS);
-//     const myAdmin = new Customer({ name:"admin", email:"admin@z.com", password: hashedPassword, blacklisted:false, repeater:false, dob:"03/25/2015", role:"admin" });
-//     const accessToken = jwt.sign({ userId: myAdmin._id }, process.env.JWT_SECRET, {
-//       expiresIn: "1d"
-//     });
-//     myAdmin.accessToken = accessToken;
-//     await myAdmin.save();
-//     res.send("succesfully created an admin")
-//   } catch (error) {
-//     next(error)
-//   }
-// }
 
 exports.signup = async (req, res, next) => {
   try {
@@ -55,10 +35,6 @@ exports.signup = async (req, res, next) => {
 
     newUser.accessToken = accessToken;
     await newUser.save();
-    // res.json({
-    //   data: newUser,
-    //   accessToken
-    // })
 
     res.header('x-auth-token', accessToken)
     .header("access-control-expose-headers", "x-auth-token")
@@ -68,23 +44,6 @@ exports.signup = async (req, res, next) => {
     next(error)
   }
 }
-
-// exports.getLogin= async (req, res, next) => {
-//   try {
-//     res.render("login")
-//   } catch (error) {
-//     next(error);
-//   }
-// }
-//
-// exports.getSignup= async (req, res, next) => {
-//   try {
-//     res.render("register")
-//   } catch (error) {
-//     next(error);
-//   }
-// }
-
 
 exports.login = async (req, res, next) => {
   try {
@@ -100,39 +59,11 @@ exports.login = async (req, res, next) => {
     const validPassword = await validatePassword(password, user.password);
     if (!validPassword) return next(new Error('Password is not correct'))
 
-    // const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-    //   expiresIn: "1d"
-    // });
-
     const accessToken = user.generateAuthToken();
 
-    await Customer.findByIdAndUpdate(user._id, { accessToken })
-
-    // console.log(user)
+    await Customer.findByIdAndUpdate(user._id, { accessToken });
 
     res.send(accessToken);
-
-
-    //res.render("login")
-
-
-
-    //console.log(accessToken)
-
-    //res.header('x-auth-token', accessToken).render("dashboard",{"currentUser":user});
-    //res.header('x-auth-token', accessToken);
-    // if(user.role==="basic"){
-    //   res.header('x-auth-token', accessToken).render("dashboard",{"currentUser":user});
-    //
-    //   //res.render("dashboard",{"currentUser":user})
-    // }else if(user.role==="admin"){
-    //   res.send("admin")
-    // }
-
-    // res.status(200).send({
-    //   data: { email: user.email, role: user.role },
-    //   accessToken
-    // })
 
   } catch (error) {
     next(error);

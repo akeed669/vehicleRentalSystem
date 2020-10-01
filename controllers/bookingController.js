@@ -51,7 +51,7 @@ exports.makeBooking = async (req, res, next) => {
     //checking whether customer can be provided the late return option
     if(lateReturn){
       if (!bcustomer.repeater){
-        return res.status(400).send('This option is unfortunately unavailable only for first time customers')
+        return res.status(400).send('Late returns are only possible for first time customers')
       }
     }
 
@@ -103,7 +103,6 @@ exports.makeBooking = async (req, res, next) => {
 
       } else {
         const newBooking = new Booking(bookingObj);
-        console.log("thambi")
         await newBooking.save();
 
         res.status(200).json({
