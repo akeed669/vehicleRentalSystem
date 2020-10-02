@@ -7,17 +7,23 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 
+//add vehicle to mongodb collection
+
 exports.addVehicle = async (req, res, next) => {
   try {
+    //validate received request body
     const { error } = validateVehicle(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
+    //check if vehicle already exists in collection
     const vehicle = await Vehicle.findOne({ vname: req.body.vname });
     if (vehicle) return res.status(400).send('Vehicle already in database.');
 
+    //destructure req body and create extra object
     const {vname, transmission, fuelType, dailyRent, carsAvailable, vehicleType} = req.body
     const newVehicle = new Vehicle({ vname, transmission, fuelType, dailyRent, carsAvailable,vehicleType });
 
+    //save to collection ; send as response
     await newVehicle.save();
     res.json({
       data: newVehicle
@@ -27,6 +33,8 @@ exports.addVehicle = async (req, res, next) => {
     next(error)
   }
 }
+
+//add vehicle type to mongodb collection
 
 exports.addVehicleType = async (req, res, next) => {
   try {
@@ -49,16 +57,17 @@ exports.addVehicleType = async (req, res, next) => {
   }
 }
 
+//send all vehicles from mongodb collection as a json response object
+//with a status of 200 - success
+
 exports.getVehicles = async (req, res, next) => {
-
-
-
-
   const vehicles = await Vehicle.find({});
   res.status(200).json({
     data: vehicles
   });
 }
+
+//send all vehicle types from collection as a json object
 
 exports.getVehicleTypes = async (req, res, next) => {
   const vehicleTypes = await VehicleType.find({});
@@ -66,6 +75,9 @@ exports.getVehicleTypes = async (req, res, next) => {
     data: vehicleTypes
   });
 }
+
+//get specific vehicle from mongodb collection; send response as json object
+//with a status of 200 - success
 
 exports.getVehicle = async (req, res, next) => {
   try {
@@ -80,30 +92,32 @@ exports.getVehicle = async (req, res, next) => {
   }
 }
 
-exports.updateVehicle = async (req, res, next) => {
-  try {
-    // const { error } = validateUserReg(req.body);
-    // if (error) return res.status(400).send(error.details[0].message);
-    //const update = req.body
-    const vehicleId = req.params.vehicleId || req.body.vehicle;
-    //const vehicleId = vid;
-    //console.log(req.body.vehicle)
-    //const vehicle = await Vehicle.findById(vehicleId)
-    // const update={
-    //   carsAvailable:vehicle.carsAvailable-1
-    // }
-    const update = req.body
+// exports.updateVehicle = async (req, res, next) => {
+//   try {
+//     // const { error } = validateUserReg(req.body);
+//     // if (error) return res.status(400).send(error.details[0].message);
+//     //const update = req.body
+//     const vehicleId = req.params.vehicleId || req.body.vehicle;
+//     //const vehicleId = vid;
+//     //console.log(req.body.vehicle)
+//     //const vehicle = await Vehicle.findById(vehicleId)
+//     // const update={
+//     //   carsAvailable:vehicle.carsAvailable-1
+//     // }
+//     const update = req.body
+//
+//     await Vehicle.findByIdAndUpdate(vehicleId, update);
+//     const vehicle = await Vehicle.findById(vehicleId)
+//     // res.status(200).json({
+//     //   data: vehicle,
+//     //   message: 'Vehicle has been updated'
+//     // });
+//   } catch (error) {
+//     next(error)
+//   }
+// }
 
-    await Vehicle.findByIdAndUpdate(vehicleId, update);
-    const vehicle = await Vehicle.findById(vehicleId)
-    // res.status(200).json({
-    //   data: vehicle,
-    //   message: 'Vehicle has been updated'
-    // });
-  } catch (error) {
-    next(error)
-  }
-}
+//delete specific vehicle from collection; send response
 
 exports.deleteVehicle = async (req, res, next) => {
   try {
@@ -118,6 +132,8 @@ exports.deleteVehicle = async (req, res, next) => {
   }
 }
 
+//use Joi to validate data received from request when creating a new vehicle
+
 function validateVehicle(req) {
   const schema = Joi.object({
     vname: Joi.string().min(3).max(50).required(),
@@ -130,6 +146,8 @@ function validateVehicle(req) {
 
   return schema.validate(req);
 }
+
+//use Joi to validate data when creating a new vehicle type
 
 function validateVehicleType(req) {
   const schema = Joi.object({

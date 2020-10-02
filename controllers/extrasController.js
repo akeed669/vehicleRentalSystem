@@ -1,24 +1,22 @@
 const Joi = require('joi');
-//const Customer = require('../models/userModel');
-//const { roles } = require('../roles')
 const mongoose=require("mongoose")
-//const Vehicle= require('../models/vehicleModel');
-//const Rental= require('../models/rentalModel');
 const Extra= require('../models/extrasModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 
-//let vehicleForBooking=""
-
+//add extra to mongodb collection
 exports.addExtra = async (req, res, next) => {
   try {
+    //validate received request body
     const { error } = validateExtra(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const {extraName, dailyCost, unitsAvailable} = req.body
+    //destructure req body and create extra object
+    const {extraName, dailyCost, unitsAvailable} = req.body;
     const newExtra = new Extra({ extraName, dailyCost, unitsAvailable });
 
+    //save to collection ; send as response
     await newExtra.save();
     res.json({
       data: newExtra
@@ -29,38 +27,40 @@ exports.addExtra = async (req, res, next) => {
   }
 }
 
-exports.updateExtra = async (req, res, next) => {
-  try {
-    // const { error } = validateUserReg(req.body);
-    // if (error) return res.status(400).send(error.details[0].message);
-    //const update = req.body
-    //const extraId = req.params.extraId
-    const extrasIds=req.body.unitsAvailable
-    //const vehicleId = vid;
-    //console.log(req.body.vehicle)
-    //const vehicle = await Vehicle.findById(vehicleId)
-    // const update={
-    //   carsAvailable:vehicle.carsAvailable-1
-    // }
-    //const update = req.body
-    const update=
+// exports.updateExtra = async (req, res, next) => {
+//   try {
+//     // const { error } = validateUserReg(req.body);
+//     // if (error) return res.status(400).send(error.details[0].message);
+//     //const update = req.body
+//     //const extraId = req.params.extraId
+//     const extrasIds=req.body.unitsAvailable
+//     //const vehicleId = vid;
+//     //console.log(req.body.vehicle)
+//     //const vehicle = await Vehicle.findById(vehicleId)
+//     // const update={
+//     //   carsAvailable:vehicle.carsAvailable-1
+//     // }
+//     //const update = req.body
+//     const update=
+//
+//     //console.log(extraId)
+//
+//     extraId.forEach((item,i) => {
+//       Extra.findByIdAndUpdate(item, update);
+//     });
+//     //await Extra.findByIdAndUpdate(extraId, update);
+//     //const extra = await Extra.findById(extraId)
+//     // res.status(200).json({
+//     //   data: extra,
+//     //   message: 'Extra has been updated'
+//     // });
+//   } catch (error) {
+//     next(error)
+//   }
+// }
 
-    //console.log(extraId)
-
-    extraId.forEach((item,i) => {
-      Extra.findByIdAndUpdate(item, update);
-    });
-    //await Extra.findByIdAndUpdate(extraId, update);
-    //const extra = await Extra.findById(extraId)
-    // res.status(200).json({
-    //   data: extra,
-    //   message: 'Extra has been updated'
-    // });
-  } catch (error) {
-    next(error)
-  }
-}
-
+//send all extras from mongodb collection as a json response object
+//with a status of 200 - success
 exports.getExtras = async (req, res, next) => {
   const extras = await Extra.find({});
   res.status(200).json({
@@ -68,6 +68,8 @@ exports.getExtras = async (req, res, next) => {
   });
 }
 
+//get specific extra from mongodb collection; send response as json object
+//with a status of 200 - success
 exports.getExtra = async (req, res, next) => {
   try {
     const extraId = req.params.extraId;
@@ -81,6 +83,7 @@ exports.getExtra = async (req, res, next) => {
   }
 }
 
+//delete specific extra from collection; send response
 exports.deleteExtra = async (req, res, next) => {
   try {
     const extraId = req.params.extraId;
@@ -94,6 +97,7 @@ exports.deleteExtra = async (req, res, next) => {
   }
 }
 
+//use Joi to validate data received from request when creating a new extra
 
 function validateExtra(req) {
   const schema = Joi.object({

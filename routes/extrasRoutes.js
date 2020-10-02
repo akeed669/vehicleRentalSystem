@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const extrasController = require('../controllers/extrasController');
-const auth=require("../middleware/auth")
 
 // routes for managing booking extras (baby seat, SatNav etc)
 
@@ -11,7 +10,7 @@ router.get('/extra/:extraId', extrasController.getExtra);
 
 router.get('/extras', extrasController.getExtras);
 
-router.put('/extra/:extraId', extrasController.updateExtra);
+// router.put('/extra/:extraId', extrasController.updateExtra);
 
 router.delete('/extra/:extraId', extrasController.deleteExtra);
 
