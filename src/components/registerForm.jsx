@@ -7,7 +7,8 @@ import auth from "../services/authService";
 class RegisterForm extends Form {
   //state variables to hold input and errors
   state = {
-    data: { name:"", username: "", password: "", dob:"" , license:"" ,councilTaxId:"", picture:"" },
+    data: { name:"", username: "", password: "", dob:"" ,
+    license:"" ,councilTaxId:"", picture:"" },
     errors: {}
   };
 

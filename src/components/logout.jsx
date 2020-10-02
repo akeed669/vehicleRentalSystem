@@ -8,7 +8,6 @@ class Logout extends Component {
     //redirect to home for unlogged users
     window.location = "/";
   }
-
   render() {
     return null;
   }

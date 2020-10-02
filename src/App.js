@@ -40,7 +40,7 @@ class App extends Component {
         {/*render a navbar*/}
         <NavBar user={user} />
         <main className="container">
-        
+
         {/*render a switch with all routes*/}
           <Switch>
             <Route path="/register" component={RegisterForm} />

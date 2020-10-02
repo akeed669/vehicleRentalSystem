@@ -5,7 +5,7 @@ import { apiUrl } from "../config.json";
 //scraped data from rentals website - external API
 const apiEndpoint = apiUrl + "/expedia";
 
-//consume api to get rental prices from expedia website  
+//consume api to get rental prices from expedia website
 export function getAutomobiles() {
   return http.get(apiEndpoint);
 }

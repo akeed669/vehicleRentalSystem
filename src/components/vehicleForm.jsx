@@ -10,13 +10,13 @@ import { getGenres } from "../services/genreService";
 class BookingForm extends Form {
   //define state variables
   state = {
-    data: { title: "", genreId: "", numberInStock: "", dailyRentalRate: "", start:"", end:"", extrasNeeded:false},
+    data: { title: "", genreId: "", numberInStock: "",
+    dailyRentalRate: "", start:"", end:"", extrasNeeded:false},
     genres: [],
     errors: {}
   };
 
   //schema to validate form
-
   schema = {
     _id: Joi.string(),
     title: Joi.string()
@@ -70,7 +70,6 @@ class BookingForm extends Form {
   }
 
   async componentDidMount() {
-
     await this.populateMovie();
   }
 
