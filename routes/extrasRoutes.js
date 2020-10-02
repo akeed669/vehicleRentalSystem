@@ -3,6 +3,8 @@ const router = express.Router();
 const extrasController = require('../controllers/extrasController');
 const auth=require("../middleware/auth")
 
+// routes for managing booking extras (baby seat, SatNav etc)
+
 router.post('/newExtra', extrasController.addExtra);
 
 router.get('/extra/:extraId', extrasController.getExtra);

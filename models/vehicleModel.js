@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+//create vehicle schema for mongodb collection
+
 const VehicleSchema=new mongoose.Schema({
 
   vname:{
-    //drop down list
     type: String,
     required: true
   },
@@ -27,15 +28,13 @@ const VehicleSchema=new mongoose.Schema({
     required: true
   },
 
+  //references table to set type of vehicle : "small town car" etc.
+
   vehicleType:{
     type:mongoose.Schema.Types.ObjectId,
     ref: 'vehicleType',
     required: true
   },
-  // available:{
-  //   type: Boolean,
-  //   default: true,
-  // },
 
 });
 

@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+//create extras schema for mongodb collection
+
 const ExtrasSchema=new mongoose.Schema({
 
   extraName:{
@@ -24,5 +26,3 @@ const ExtrasSchema=new mongoose.Schema({
 const Extra = mongoose.model('extra', ExtrasSchema);
 
 module.exports = Extra;
-module.exports.eSchema = ExtrasSchema;
-//admin should be able to add more extras

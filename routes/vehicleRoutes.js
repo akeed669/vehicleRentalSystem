@@ -3,6 +3,8 @@ const router = express.Router();
 const vehicleController = require('../controllers/vehicleController');
 const auth=require("../middleware/auth")
 
+// routes for managing vehicles
+
 router.post('/newVehicle', vehicleController.addVehicle);
 
 router.get('/vehicle/:vehicleId', vehicleController.getVehicle);

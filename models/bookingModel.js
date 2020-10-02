@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const Customer= require('../models/userModel');
 const Vehicle= require('../models/vehicleModel');
 const Extra=require('../models/extrasModel');
-//const {vSchema} = require('../models/vehicleModel');
+
+//create booking schema for mongodb collection
 
 const BookingSchema=new mongoose.Schema({
 
@@ -14,7 +15,14 @@ const BookingSchema=new mongoose.Schema({
     required: true
   },
 
-  vehicle:[{type:mongoose.Schema.Types.ObjectId, ref: 'vehicle', required: true}],
+  //a booking can have an array of vehicles ; references vehicles collection
+  vehicle:[
+    {
+      type:mongoose.Schema.Types.ObjectId,
+      ref: 'vehicle',
+      required: true
+    }
+  ],
 
   startDate:{
     type: Date,
@@ -37,9 +45,15 @@ const BookingSchema=new mongoose.Schema({
     required: true
   },
 
-  bookingExtras:[{type:mongoose.Schema.Types.ObjectId, ref: 'extra', required: false}],
+  //a booking can have an array of extras ; references vehicles collection
+  bookingExtras:[
+    {
+      type:mongoose.Schema.Types.ObjectId,
+      ref: 'extra',
+      required: false
+    }
+  ],
 
-  //bookingExtension:extensionSchema,
   lateReturn:{
     type: Boolean,
     default: false
@@ -54,7 +68,6 @@ const BookingSchema=new mongoose.Schema({
     type: Boolean,
     default: false
   },
-
 
   insurance:{
     type: Boolean,

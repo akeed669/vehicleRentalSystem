@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 
+//create user schema for mongodb collection
 const CustomerSchema = new Schema({
 
   name:{
@@ -24,35 +25,31 @@ const CustomerSchema = new Schema({
     required: true,
     minlength:6,
     maxlength:1024,
-
   },
   blacklisted:{
     type: Boolean,
     default: false,
-    //enum: [true,false]
   },
   repeater:{
     type: Boolean,
     default: false,
-    //enum: [true,false]
   },
   dob:{
     type: Date,
     required: true
   },
   role: {
+    required: true,
     type: String,
     default: 'basic',
     enum: ["basic", "admin"]
   },
-
   license:{
     type: String,
     required: true,
     minlength:6,
     maxlength:6
   },
-
   councilTaxId:{
     type: String,
     required: true,
@@ -65,6 +62,10 @@ const CustomerSchema = new Schema({
   }
 });
 
+//method to generate jwt required when logging in as user
+//signed with username, role, name and id ; expires in 24 hours
+//encrypted with secret from .env file
+
 CustomerSchema.methods.generateAuthToken = function() {
   const token = jwt.sign({ _id: this._id, name: this.name, username:this.username, role:this.role }, process.env.JWT_SECRET,{
     expiresIn: "1d"
@@ -74,4 +75,4 @@ CustomerSchema.methods.generateAuthToken = function() {
 
 const Customer = mongoose.model('customer', CustomerSchema);
 
-module.exports = mongoose.model('Customer', CustomerSchema);
+module.exports = Customer;
