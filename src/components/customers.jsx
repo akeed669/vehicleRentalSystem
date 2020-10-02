@@ -10,6 +10,7 @@ import { paginate } from "../utils/paginate";
 import _ from "lodash";
 
 class Customers extends Component {
+  //define state variables
   state = {
     customers: [],
     currentPage: 1,
@@ -20,27 +21,28 @@ class Customers extends Component {
   };
 
   async componentDidMount() {
-
+    //get customers from db
     const { data: customersObject } = await getCustomers();
     const customers=customersObject.data;
+    //update state with received customers
     this.setState({ customers });
 
   }
 
-  // handleDelete = async movie => {
-  //   const originalMovies = this.state.customers;
-  //   const customers = originalMovies.filter(m => m._id !== movie._id);
-  //   this.setState({ customers });
-  //
-  //   try {
-  //     await deleteCustomer(movie._id);
-  //   } catch (ex) {
-  //     if (ex.response && ex.response.status === 404)
-  //       toast.error("This movie has already been deleted.");
-  //
-  //     this.setState({ customers: originalMovies });
-  //   }
-  // };
+  handleDelete = async movie => {
+    const originalMovies = this.state.customers;
+    const customers = originalMovies.filter(m => m._id !== movie._id);
+    this.setState({ customers });
+
+    try {
+      await deleteCustomer(movie._id);
+    } catch (ex) {
+      if (ex.response && ex.response.status === 404)
+        toast.error("This movie has already been deleted.");
+
+      this.setState({ customers: originalMovies });
+    }
+  };
 
 
   handlePageChange = page => {

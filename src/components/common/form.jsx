@@ -4,6 +4,7 @@ import Input from "./input";
 import Select from "./select";
 
 class Form extends Component {
+  //define state variables
   state = {
     data: {},
     errors: {}
@@ -23,71 +24,57 @@ class Form extends Component {
     const obj = { [name]: value };
     const schema = { [name]: this.schema[name] };
     const { error } = Joi.validate(obj, schema);
-
     return error ? error.details[0].message : null;
   };
 
   handleSubmit = e => {
+    //prevent default behavior
     e.preventDefault();
+    //first check errors by validating form
     const errors = this.validate();
+    //set errors object in state
     this.setState({ errors: errors || {} });
     if (errors) return;
-
+    //call submit method in form
     this.doSubmit();
   };
 
   handleChangeCheckBox=(e) => {
-    // current array of options
-    const bookingExtra = this.state.data.bookingExtra;
-    let lateReturnBox = this.state.data.lateReturn;
+    //get current array of extras
+    const bookingExtra = this.state.data.bookingExtra;  
     let index;
 
     // check if the check box is checked or unchecked
     if (e.target.checked) {
 
-      if(e.target.value == "late"){
-        lateReturnBox=true;
-      }
-
       // add the numerical value of the checkbox to bookingExtra array
-
-      else if(!bookingExtra.includes(e.target.value)){
+      if(!bookingExtra.includes(e.target.value)){
         bookingExtra.push(e.target.value)
       }
 
+    }
+    else {
 
-    } else {
-
-      if(e.target.value == "late"){
-        lateReturnBox=false;
-      }
-
-      // or remove the value from the unchecked checkbox from the array
-      else{
-        index = bookingExtra.indexOf(e.target.value)
-        bookingExtra.splice(index, 1)
-      }
+      // remove the value from the unchecked checkbox from the array
+      index = bookingExtra.indexOf(e.target.value)
+      bookingExtra.splice(index, 1)
     }
 
     // update the state with the new array of bookingExtra
     this.setState({ bookingExtra: bookingExtra });
-
-    // this.setState(() => ({
-    //   lateReturn:lateReturnBox
-    // }));
-
   };
 
 
-  handleFile=(e) => {
+  // handleFile=(e) => {
+  //
+  //   const pictureFile = e.target.files[0];
+  //   // update the state with the selected image
+  //   this.setState({ picture: pictureFile });
+  //   console.log(this.state.data)
+  //
+  // };
 
-     const pictureFile = e.target.files[0];
-    // update the state with the selected image
-    this.setState({ picture: pictureFile });
-    console.log(this.state.data)
-
-  };
-
+  //handleChange method for form elements
   handleChange = ({ currentTarget: input }) => {
 
     const errors = { ...this.state.errors };
@@ -98,16 +85,16 @@ class Form extends Component {
     const data = { ...this.state.data };
 
     if(input.name==="picture"){
-      console.log(input)
       //data[input.name] = input.target.files[0];
     }
     data[input.name] = input.value;
 
+    //set the state of elements after each change (ex:each letter entered)
     this.setState({ data, errors });
-    
+
   };
 
-
+  //for rendering buttons on form
   renderButton(label) {
     return (
       <button disabled={this.validate()} className="btn btn-primary">
@@ -116,10 +103,13 @@ class Form extends Component {
     );
   }
 
+  //for rendering checkbox components on form
   renderInput(name, label, type, bsClass, disabled) {
     if(type === undefined){type="text"}
     if(bsClass === undefined){bsClass="form-control"}
     const { data, errors } = this.state;
+
+    //renders a custom component on form
     return (
       <Input
         type={type}
@@ -134,10 +124,13 @@ class Form extends Component {
     );
   }
 
+  //for rendering checkbox components on form
   renderCheckBox(name, label, type, bsClass, checkBoxValue) {
     if(type === undefined){type="text"}
     if(bsClass === undefined){bsClass="form-control"}
     const { data, errors } = this.state;
+
+    //renders a custom component
     return (
       <Input
         type={type}
@@ -151,10 +144,12 @@ class Form extends Component {
     );
   }
 
+  //for rendering select components on form
   renderSelect(name, label, options, multiple, disabled) {
     if(multiple === undefined){multiple=false}
     const { data, errors } = this.state;
 
+    //renders a custom component
     return (
       <Select
         multiple={multiple}

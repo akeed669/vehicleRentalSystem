@@ -3,6 +3,8 @@ import { Link, NavLink } from "react-router-dom";
 
 const NavBar = ({ user }) => {
 
+  //render navbar with navlink components
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <Link className="navbar-brand" to="/">
@@ -24,6 +26,9 @@ const NavBar = ({ user }) => {
           <NavLink className="nav-item nav-link" to="/movies">
             Vehicles
           </NavLink>
+
+          {/*render below components only if user is admin*/}
+
         {(user&&user.role==="admin")&& (
           <React.Fragment>
           <NavLink className="nav-item nav-link" to="/customers">
@@ -33,10 +38,13 @@ const NavBar = ({ user }) => {
             Expedia Prices
           </NavLink>
           </React.Fragment>
-        )}          
+        )}
           <NavLink className="nav-item nav-link" to="/rentals">
             Rentals
           </NavLink>
+
+          {/*render below components only for logged in users*/}
+
           {!user && (
             <React.Fragment>
               <NavLink className="nav-item nav-link" to="/login">

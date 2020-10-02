@@ -2,6 +2,8 @@ import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import auth from "../../services/authService";
 
+//always redirects to login page if not logged in
+ 
 const ProtectedRoute = ({ path, component: Component, render, ...rest }) => {
   return (
     <Route

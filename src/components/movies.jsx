@@ -11,6 +11,7 @@ import { paginate } from "../utils/paginate";
 import _ from "lodash";
 
 class Movies extends Component {
+  //define state variables
   state = {
     vehicles: [],
     genres: [],
@@ -22,24 +23,32 @@ class Movies extends Component {
   };
 
   async componentDidMount() {
+    //get vehicle types from db
     const { data:genresObject } = await getGenres();
     const genresArray=genresObject.data;
 
+    //update array of vehicle types
     const genres = [{ _id: "", vehicleTypeName: "All Vehicles" },...genresArray];
 
+    //get vehicles from db
     const { data: vehiclesObject } = await getVehicles();
 
     const vehicles=vehiclesObject.data;
+    //update state with received vehicles and vehicle types
     this.setState({ vehicles, genres });
 
   }
 
+ //to delete a vehicle
   handleDelete = async movie => {
     const originalMovies = this.state.vehicles;
+    //remove selected vehicle from array
     const vehicles = originalMovies.filter(m => m._id !== movie._id);
+    //update state with filtered vehicles
     this.setState({ vehicles });
 
     try {
+      //call api to delete vehicle
       await deleteVehicle(movie._id);
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
@@ -49,26 +58,22 @@ class Movies extends Component {
     }
   };
 
-  handleLike = movie => {
-    const vehicles = [...this.state.vehicles];
-    const index = vehicles.indexOf(movie);
-    vehicles[index] = { ...vehicles[index] };
-    vehicles[index].liked = !vehicles[index].liked;
-    this.setState({ vehicles });
-  };
-
+  //when user selects different page
   handlePageChange = page => {
     this.setState({ currentPage: page });
   };
 
+  //when user selects different vehicle type
   handleGenreSelect = genre => {
     this.setState({ selectedGenre: genre, searchQuery: "", currentPage: 1 });
   };
 
+  //when user enters search query to search a vehicle
   handleSearch = query => {
     this.setState({ searchQuery: query, selectedGenre: null, currentPage: 1 });
   };
 
+  //when user wants to sort table by particular column
   handleSort = sortColumn => {
     this.setState({ sortColumn });
   };
@@ -86,18 +91,23 @@ class Movies extends Component {
 
     let filtered = allMovies;
 
+    //filter vehicles array if search query present
     if (searchQuery)
       filtered = allMovies.filter(m =>
         m.vname.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
+    //filter vehicles array if particular vehicle type selected
     else if (selectedGenre && selectedGenre._id) {
       filtered = allMovies.filter(m => m.vehicleType === selectedGenre._id);
     }
 
+    //sort vehicles array
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
+    //get proper amount of vehicles for each page
     const vehicles = paginate(sorted, currentPage, pageSize);
 
+    //return number of vehicles for displaying and the data
     return { totalCount: filtered.length, data: vehicles };
   }
 
@@ -111,16 +121,20 @@ class Movies extends Component {
       searchQuery,
       sortColumn
     } = this.state;
+
+    //get logged in user
     const { user } = this.props;
 
     if (count === 0) return <p>There are no vehicles in the database.</p>;
 
     const { totalCount, data: vehicles } = this.getPagedData();
-    // console.log(vehicles)
 
     return (
       <div className="row">
         <div className="col-3">
+
+        {/*render the vehicle types as a group - user able to filter*/}
+
           <ListGroup
             textProperty="vehicleTypeName"
             items={genres}
@@ -129,6 +143,9 @@ class Movies extends Component {
           />
         </div>
         <div className="col">
+
+        {/*render button to create new rental order if user is a customer*/}
+
           {user.role === "basic" && (
             <Link
               to="rentals/new"
@@ -139,7 +156,11 @@ class Movies extends Component {
             </Link>
           )}
           <p>Showing {totalCount} vehicles in the database.</p>
+
+          {/*render a search box to search for vehicles*/}
           <SearchBox value={searchQuery} onChange={this.handleSearch} />
+
+          {/*render a table with vehicles*/}
           <VehiclesTable
             vehicles={vehicles}
             sortColumn={sortColumn}
@@ -147,6 +168,7 @@ class Movies extends Component {
             onDelete={this.handleDelete}
             onSort={this.handleSort}
           />
+          {/*render component for page selection*/}
           <Pagination
             itemsCount={totalCount}
             pageSize={pageSize}

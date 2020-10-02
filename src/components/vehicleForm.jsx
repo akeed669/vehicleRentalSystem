@@ -4,12 +4,18 @@ import Form from "./common/form";
 import { getVehicle, saveVehicle } from "../services/vehicleService";
 import { getGenres } from "../services/genreService";
 
+//this form is used for adding new vehicles and displaying details
+//of existing vehicles by populating the form
+
 class BookingForm extends Form {
+  //define state variables
   state = {
     data: { title: "", genreId: "", numberInStock: "", dailyRentalRate: "", start:"", end:"", extrasNeeded:false},
     genres: [],
     errors: {}
   };
+
+  //schema to validate form
 
   schema = {
     _id: Joi.string(),
@@ -42,17 +48,20 @@ class BookingForm extends Form {
     .label("Extras Required")
   };
 
+  //method to populate form with vehicle types
   async populateGenres() {
     const { data: genres } = await getGenres();
     this.setState({ genres });
   }
 
+  //populate form with vehicle details of selected vehicle
   async populateMovie() {
     try {
       const movieId = this.props.match.params.id;
       if (movieId === "new") return;
 
       const { data: movie } = await getVehicle(movieId);
+      //setting data in state to retrieved vehicle's data
       this.setState({ data: this.mapToViewModel(movie) });
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
@@ -61,10 +70,11 @@ class BookingForm extends Form {
   }
 
   async componentDidMount() {
-    //await this.populateGenres();
+
     await this.populateMovie();
   }
 
+ //returns data of vehicle from database to be set to state variables
   mapToViewModel(movie) {
     return {
       _id: movie._id,
@@ -76,12 +86,14 @@ class BookingForm extends Form {
   }
 
   doSubmit = async () => {
+    //add new vehicle
     await saveVehicle(this.state.data);
-
+    //redirect user to vehicles page after saving is complete
     this.props.history.push("/movies");
   };
 
   render() {
+    //render a booking form
     return (
       <div>
         <h1>Booking Form</h1>

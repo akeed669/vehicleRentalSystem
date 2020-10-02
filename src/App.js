@@ -24,6 +24,7 @@ class App extends Component {
   state = {};
 
   componentDidMount() {
+    //get the logged in user from storage
     const user = auth.getCurrentUser();
     this.setState({ user });
   }
@@ -35,8 +36,12 @@ class App extends Component {
     return (
       <React.Fragment>
         <ToastContainer />
+
+        {/*render a navbar*/}
         <NavBar user={user} />
         <main className="container">
+        
+        {/*render a switch with all routes*/}
           <Switch>
             <Route path="/register" component={RegisterForm} />
             <Route path="/login" component={LoginForm} />
@@ -53,17 +58,14 @@ class App extends Component {
             path="/customers"
             render={props => <Customers {...props} user={user} />}
             />
-            
             <ProtectedRoute
             path="/expedia"
             render={props => <Expedia {...props} user={user} />}
             />
-
             <ProtectedRoute
             path="/rentals"
             render={props => <Rentals {...props} user={user} />}
             />
-
             <Route path="/not-found" component={NotFound} />
             <Redirect from="/" exact to="/movies" />
             <Redirect to="/not-found" />

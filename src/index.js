@@ -8,6 +8,8 @@ import registerServiceWorker from "./registerServiceWorker";
 import "bootstrap/dist/css/bootstrap.css";
 import "font-awesome/css/font-awesome.css";
 
+//render app file inside a BrowserRouter
+
 ReactDOM.render(
   <BrowserRouter>
     <App />
