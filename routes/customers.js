@@ -4,7 +4,7 @@ const router = express.Router();
 const Customer = require('../model/Client');
 
 //route and method for receiving list of
-//fraudulent customers from insurance provider  
+//fraudulent customers from insurance provider
 router.get('/', async (req, res) => {
   try {
     const users = await Customer.list();
