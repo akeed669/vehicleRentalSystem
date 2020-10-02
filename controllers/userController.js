@@ -75,10 +75,10 @@ exports.login = async (req, res, next) => {
     //check if username exists
     const user = await Customer.findOne({ username });
 
-    if (!user) return next(new Error('Username does not exist'));
+    if (!user) return res.status(400).send('Username does not exist');
     //validate password
     const validPassword = await validatePassword(password, user.password);
-    if (!validPassword) return next(new Error('Password is not correct'))
+    if (!validPassword) return res.status(400).send('Password is not correct');
     //generate jwt token
     const accessToken = user.generateAuthToken();
     //update jwt token for user each time
