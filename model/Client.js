@@ -1,5 +1,7 @@
 const db = require('../database/db');
 
+//create object with method to get a list of records
+//from selected table in database
 const Client = {
   list: () => {
     return new Promise((resolve, reject) => {
@@ -13,4 +15,5 @@ const Client = {
     });
   }
 };
+
 module.exports = Client;
