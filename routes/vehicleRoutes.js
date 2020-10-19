@@ -16,6 +16,6 @@ router.post('/newVehicleType', vehicleController.addVehicleType);
 
 // router.put('/vehicle/:vehicleId', vehicleController.updateVehicle);
 
-router.delete('/vehicle/:vehicleId', vehicleController.deleteVehicle);
+router.delete('/vehicles/:vehicleId', vehicleController.deleteVehicle);
 
 module.exports = router;

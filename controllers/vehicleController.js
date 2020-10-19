@@ -123,10 +123,11 @@ exports.deleteVehicle = async (req, res, next) => {
   try {
     const vehicleId = req.params.vehicleId;
     await Vehicle.findByIdAndDelete(vehicleId);
-    res.status(200).json({
-      data: null,
-      message: 'Vehicle has been deleted'
-    });
+    res.status(200).send("This vehicle was deleted successfully!")
+    // res.status(200).json({
+    //   data: null,
+    //   message: 'Vehicle has been deleted'
+    // });
   } catch (error) {
     next(error)
   }

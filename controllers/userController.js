@@ -160,10 +160,11 @@ exports.deleteUser = async (req, res, next) => {
   try {
     const userId = req.params.userId;
     await Customer.findByIdAndDelete(userId);
-    res.status(200).json({
-      data: null,
-      message: 'User has been deleted'
-    });
+    res.status(200).send("This customer was removed successfully!")
+    // res.status(200).json({
+    //   data: null,
+    //   message: 'User has been deleted'
+    // });
   } catch (error) {
     next(error)
   }

@@ -174,7 +174,7 @@ exports.makeBooking = async (req, res, next) => {
         res.status(200).json({
           data: newBooking,
           message: 'Booking has been created'
-        })       
+        })
       }
     }
     //changing the customer status after a booking
@@ -263,6 +263,18 @@ exports.getBooking = async (req, res, next) => {
     next(error)
   }
 }
+
+// exports.getBooking = async (req, res, next) => {
+//   try {
+//     const bookingId = req.params.bookingId;
+//     const booking = await Booking.findById(bookingId).populate('customer');
+//     res.status(200).json({
+//       data: booking
+//     });
+//   } catch (error) {
+//     next(error)
+//   }
+// }
 
 //delete specific booking from collection; send response
 

@@ -29,7 +29,6 @@ const VehicleSchema=new mongoose.Schema({
   },
 
   //references table to set type of vehicle : "small town car" etc.
-
   vehicleType:{
     type:mongoose.Schema.Types.ObjectId,
     ref: 'vehicleType',
