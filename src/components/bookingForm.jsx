@@ -80,11 +80,11 @@ class BookingForm extends Form {
       this.setState({disableVehicleChoice:true})
 
       const { data: booking } = await getRental(bookingId);
-      console.log(booking)
+      //console.log(booking)
 
       this.setState({ data: this.mapToViewModel(booking.data) });
       // this.setState({ data: booking.data });
-      console.log(this.state.data)
+      //console.log(this.state.data)
 
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
@@ -104,13 +104,13 @@ class BookingForm extends Form {
   }
 
   mapToViewModel(booking) {
-    console.log(booking)
+    //console.log(booking)
     const parsedBooking = {...booking};
-    console.log(parsedBooking)
+    //console.log(parsedBooking)
     parsedBooking.lateReturn = parsedBooking.lateReturn === true?"Yes":"No";
     parsedBooking.vehiclePicked = parsedBooking.vehiclePicked === true?"Yes":"No";
     parsedBooking.vehicleReturned = parsedBooking.vehicleReturned === true?"Yes":"No";
-    console.log(parsedBooking)
+    //console.log(parsedBooking)
     return {
       _id: parsedBooking._id,
       customer:parsedBooking.customer,
@@ -126,7 +126,7 @@ class BookingForm extends Form {
 
   doSubmit = async () => {
 
-    console.log(this.state.data)
+    //console.log(this.state.data)
 
     const {data:bookingData}=this.state;
 
@@ -134,7 +134,7 @@ class BookingForm extends Form {
       bookingData.customer = this.props.user._id;
     }
 
-    console.log(bookingData);
+    //console.log(bookingData);
 
     if(bookingData._id === ""){
       const dataxxx = { ...bookingData };
@@ -146,7 +146,7 @@ class BookingForm extends Form {
       await saveRental(bookingData);
     }
 
-    this.props.history.push("/movies");
+    this.props.history.push("/vehicles");
   };
 
   render() {

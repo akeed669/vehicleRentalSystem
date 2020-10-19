@@ -13,7 +13,7 @@ class VehiclesTable extends Component {
       content: vehicle => <Link to={`/vehicles/${vehicle._id}`}>{vehicle.vname}</Link>
     },
     { path: "carsAvailable", label: "Cars Available" },
-    { path: "dailyRent", label: "Daily Rental Rate" },
+    { path: "dailyRent", label: "Daily Rental Rate (LKR)" },
 
   ];
 

@@ -41,7 +41,7 @@ class CustomerForm extends Form {
       const { data: customer } = await getCustomer(customerId);
 
       this.setState({ data: this.mapToViewModel(customer.data) });
-      console.log(this.state.data)
+      //console.log(this.state.data)
 
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
@@ -76,7 +76,7 @@ class CustomerForm extends Form {
 
     await updateCustomer(customerData);
 
-    this.props.history.push("/movies");
+    this.props.history.push("/vehicles");
   };
 
   render() {

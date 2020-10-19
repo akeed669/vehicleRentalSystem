@@ -38,6 +38,7 @@ class RentalsTable extends Component {
 
   render() {
     const { rentals, sortColumn, onSort } = this.props;
+    console.log(rentals)
     return (
       <Table
         columns={this.columns}

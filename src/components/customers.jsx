@@ -29,18 +29,18 @@ class Customers extends Component {
 
   }
 
-  handleDelete = async movie => {
-    const originalMovies = this.state.customers;
-    const customers = originalMovies.filter(m => m._id !== movie._id);
+  handleDelete = async customer => {
+    const originalCustomers = this.state.customers;
+    const customers = originalCustomers.filter(m => m._id !== customer._id);
     this.setState({ customers });
 
     try {
-      await deleteCustomer(movie._id);
+      await deleteCustomer(customer._id);
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
-        toast.error("This movie has already been deleted.");
+        toast.error("This customer has already been deleted.");
 
-      this.setState({ customers: originalMovies });
+      this.setState({ customers: originalCustomers });
     }
   };
 

@@ -4,7 +4,7 @@ import { ToastContainer } from "react-toastify";
 
 import Customers from "./components/customers";
 import Expedia from "./components/expedia";
-import Movies from "./components/movies";
+import Vehicles from "./components/vehicles";
 import BookingForm from "./components/bookingForm";
 import CustomerForm from "./components/customerForm";
 import Rentals from "./components/rentals";
@@ -51,8 +51,8 @@ class App extends Component {
             <ProtectedRoute path="/rentals/:id"
             render={props => <BookingForm {...props} user={user} />} />
             <ProtectedRoute
-              path="/movies"
-              render={props => <Movies {...props} user={user} />}
+              path="/vehicles"
+              render={props => <Vehicles {...props} user={user} />}
             />
             <ProtectedRoute
             path="/customers"
@@ -67,7 +67,7 @@ class App extends Component {
             render={props => <Rentals {...props} user={user} />}
             />
             <Route path="/not-found" component={NotFound} />
-            <Redirect from="/" exact to="/movies" />
+            <Redirect from="/" exact to="/vehicles" />
             <Redirect to="/not-found" />
           </Switch>
         </main>

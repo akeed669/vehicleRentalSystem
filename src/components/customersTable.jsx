@@ -8,10 +8,11 @@ class CustomersTable extends Component {
 
     {
       path: "name",
-      label: "Customer",
+      label: "Customer Name",
       content: user => <Link to={`/profile/${user._id}`}>{user.name}</Link>
     },
-    { path: "dob", label: "Date of Birth" },
+    { path: "license", label: "Driving License" },
+    { path: "councilTaxId", label: "Council Tax Number" }
 
   ];
 
@@ -35,6 +36,7 @@ class CustomersTable extends Component {
 
   render() {
     const { customers, sortColumn, onSort } = this.props;
+    //console.log(customers)
     return (
       <Table
         columns={this.columns}

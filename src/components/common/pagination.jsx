@@ -5,10 +5,15 @@ import _ from "lodash";
 const Pagination = props => {
   const { itemsCount, pageSize, currentPage, onPageChange } = props;
 
+  //determine the number of pages needed
   const pagesCount = Math.ceil(itemsCount / pageSize);
+  //pagination component not required if pagecount=1
   if (pagesCount === 1) return null;
+
+  //creates an array of page numbers
   const pages = _.range(1, pagesCount + 1);
 
+  // the customized pagination component from bootstrap
   return (
     <nav>
       <ul className="pagination">

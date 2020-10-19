@@ -23,7 +23,7 @@ const NavBar = ({ user }) => {
       </button>
       <div className="collapse navbar-collapse" id="navbarNav">
         <div className="navbar-nav">
-          <NavLink className="nav-item nav-link" to="/movies">
+          <NavLink className="nav-item nav-link" to="/vehicles">
             Vehicles
           </NavLink>
 
@@ -57,14 +57,21 @@ const NavBar = ({ user }) => {
           )}
           {(user) &&(
             <React.Fragment>
+            {(user.name !="admin")&&(
               <NavLink className="nav-item nav-link" to={`/profile/${user._id}`}>
                 {user.name}
               </NavLink>
+            )}
+            {(user.name == "admin")&&(
+              <p className="nav-item nav-link">{user.name}</p>
+            )}
+
               <NavLink className="nav-item nav-link" to="/logout">
                 Logout
               </NavLink>
             </React.Fragment>
           )}
+
         </div>
       </div>
     </nav>

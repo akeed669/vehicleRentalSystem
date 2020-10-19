@@ -2,6 +2,13 @@ import axios from "axios";
 import logger from "./logService";
 import { toast } from "react-toastify";
 
+
+// axios.interceptors.response.use(function (response) {
+//     // Any status code that lie within the range of 2xx cause this function to trigger
+//     // Do something with response data
+//     toast.success(response.data);
+//   })
+
 //use interceptors for catching errors
 axios.interceptors.response.use(null, error => {
   const expectedError =
@@ -13,7 +20,7 @@ axios.interceptors.response.use(null, error => {
   if (!expectedError) {
     logger.log(error);
     //toast message shown to user
-    toast.error("An unexpected error occurrred.");
+    toast.error("An unexpected error occurred.");
   }
 
   //for understood errors (from back-end)
@@ -25,7 +32,7 @@ axios.interceptors.response.use(null, error => {
   return Promise.reject(error);
 });
 
-//insert the jwt token into header 
+//insert the jwt token into header
 function setJwt(jwt) {
   axios.defaults.headers.common["x-auth-token"] = jwt;
 }

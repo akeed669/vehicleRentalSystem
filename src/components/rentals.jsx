@@ -10,7 +10,7 @@ import { getGenres } from "../services/genreService";
 import { paginate } from "../utils/paginate";
 import _ from "lodash";
 
-class Movies extends Component {
+class Rentals extends Component {
   state = {
     rentals: [],
     genres: [],
@@ -41,18 +41,18 @@ class Movies extends Component {
 
   }
 
-  handleDelete = async movie => {
-    const originalMovies = this.state.rentals;
-    const rentals = originalMovies.filter(m => m._id !== movie._id);
+  handleDelete = async rental => {
+    const originalRentals = this.state.rentals;
+    const rentals = originalRentals.filter(m => m._id !== rental._id);
     this.setState({ rentals });
 
     try {
-      await deleteRental(movie._id);
+      await deleteRental(rental._id);
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
-        toast.error("This movie has already been deleted.");
+        toast.error("This rental has already been deleted.");
 
-      this.setState({ rentals: originalMovies });
+      this.setState({ rentals: originalRentals });
     }
   };
 
@@ -80,17 +80,17 @@ class Movies extends Component {
       sortColumn,
       selectedGenre,
       searchQuery,
-      rentals: allMovies
+      rentals: allRentals
     } = this.state;
 
-    let filtered = allMovies;
+    let filtered = allRentals;
 
     if (searchQuery)
-      filtered = allMovies.filter(m =>
+      filtered = allRentals.filter(m =>
         m.vname.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
     else if (selectedGenre && selectedGenre._id) {
-      filtered = allMovies.filter(m => m.rentalType === selectedGenre._id);
+      filtered = allRentals.filter(m => m.rentalType === selectedGenre._id);
     }
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
@@ -158,4 +158,4 @@ class Movies extends Component {
   }
 }
 
-export default Movies;
+export default Rentals;

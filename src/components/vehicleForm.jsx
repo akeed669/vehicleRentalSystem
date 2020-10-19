@@ -55,14 +55,14 @@ class BookingForm extends Form {
   }
 
   //populate form with vehicle details of selected vehicle
-  async populateMovie() {
+  async populateVehicle() {
     try {
-      const movieId = this.props.match.params.id;
-      if (movieId === "new") return;
+      const vehicleId = this.props.match.params.id;
+      if (vehicleId === "new") return;
 
-      const { data: movie } = await getVehicle(movieId);
+      const { data: vehicle } = await getVehicle(vehicleId);
       //setting data in state to retrieved vehicle's data
-      this.setState({ data: this.mapToViewModel(movie) });
+      this.setState({ data: this.mapToViewModel(vehicle) });
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
         this.props.history.replace("/not-found");
@@ -70,17 +70,17 @@ class BookingForm extends Form {
   }
 
   async componentDidMount() {
-    await this.populateMovie();
+    await this.populateVehicle();
   }
 
  //returns data of vehicle from database to be set to state variables
-  mapToViewModel(movie) {
+  mapToViewModel(vehicle) {
     return {
-      _id: movie._id,
-      title: movie.title,
-      genreId: movie.genre._id,
-      numberInStock: movie.numberInStock,
-      dailyRentalRate: movie.dailyRentalRate
+      _id: vehicle._id,
+      title: vehicle.title,
+      genreId: vehicle.genre._id,
+      numberInStock: vehicle.numberInStock,
+      dailyRentalRate: vehicle.dailyRentalRate
     };
   }
 
@@ -88,7 +88,7 @@ class BookingForm extends Form {
     //add new vehicle
     await saveVehicle(this.state.data);
     //redirect user to vehicles page after saving is complete
-    this.props.history.push("/movies");
+    this.props.history.push("/vehicles");
   };
 
   render() {

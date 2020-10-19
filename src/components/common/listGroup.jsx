@@ -8,6 +8,9 @@ const ListGroup = props => {
     selectedItem,
     onItemSelect
   } = props;
+
+  // a customized bootstrap component
+  
   return (
     <ul className="list-group">
       {items.map(item => (

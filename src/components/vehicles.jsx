@@ -10,7 +10,7 @@ import { getGenres } from "../services/genreService";
 import { paginate } from "../utils/paginate";
 import _ from "lodash";
 
-class Movies extends Component {
+class Vehicles extends Component {
   //define state variables
   state = {
     vehicles: [],
@@ -40,21 +40,21 @@ class Movies extends Component {
   }
 
  //to delete a vehicle
-  handleDelete = async movie => {
-    const originalMovies = this.state.vehicles;
+  handleDelete = async vehicle => {
+    const originalVehicles = this.state.vehicles;
     //remove selected vehicle from array
-    const vehicles = originalMovies.filter(m => m._id !== movie._id);
+    const vehicles = originalVehicles.filter(v => v._id !== vehicle._id);
     //update state with filtered vehicles
     this.setState({ vehicles });
 
     try {
       //call api to delete vehicle
-      await deleteVehicle(movie._id);
+      await deleteVehicle(vehicle._id);
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
-        toast.error("This movie has already been deleted.");
+        toast.error("This vehicle has already been deleted.");
 
-      this.setState({ vehicles: originalMovies });
+      this.setState({ vehicles: originalVehicles });
     }
   };
 
@@ -85,20 +85,20 @@ class Movies extends Component {
       sortColumn,
       selectedGenre,
       searchQuery,
-      vehicles: allMovies
+      vehicles: allVehicles
     } = this.state;
 
 
-    let filtered = allMovies;
+    let filtered = allVehicles;
 
     //filter vehicles array if search query present
     if (searchQuery)
-      filtered = allMovies.filter(m =>
+      filtered = allVehicles.filter(m =>
         m.vname.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
     //filter vehicles array if particular vehicle type selected
     else if (selectedGenre && selectedGenre._id) {
-      filtered = allMovies.filter(m => m.vehicleType === selectedGenre._id);
+      filtered = allVehicles.filter(m => m.vehicleType === selectedGenre._id);
     }
 
     //sort vehicles array
@@ -181,4 +181,4 @@ class Movies extends Component {
   }
 }
 
-export default Movies;
+export default Vehicles;
